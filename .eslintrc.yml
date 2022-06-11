@@ -1,0 +1,24 @@
+#
+#   Ethereal / A fully functional Discord bot with many features.
+#   Copyright (C) 2022 Thaddeus Kuah
+#
+env:
+  commonjs: true
+  es2021: true
+  node: true
+extends: eslint:recommended
+parserOptions:
+  ecmaVersion: latest
+rules:
+  indent:
+    - error
+    - 4
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always

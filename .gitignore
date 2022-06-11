@@ -1,0 +1,6 @@
+#
+#   Ethereal / A fully functional Discord bot with many features.
+#   Copyright (C) 2022 Thaddeus Kuah
+#
+node_modules
+.env

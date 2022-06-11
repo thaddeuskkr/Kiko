@@ -1,0 +1,38 @@
+{
+  "name": "ethereal",
+  "version": "2.0.0",
+  "description": "Ethereal Discord Bot - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thaddeuskkr/Ethereal.git"
+  },
+  "keywords": [
+    "discord.js",
+    "discord-bot",
+    "bot",
+    "discord",
+    "music"
+  ],
+  "author": "Thaddeus Kuah <thaddeuskkr@gmail.com> (https://tkkr.tk)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/thaddeuskkr/Ethereal/issues"
+  },
+  "homepage": "https://github.com/thaddeuskkr/Ethereal#readme",
+  "dependencies": {
+    "@discordjs/builders": "^0.15.0",
+    "@discordjs/rest": "^0.5.0",
+    "chalk": "^4.1.2",
+    "discord-api-types": "^0.33.5",
+    "discord.js": "^13.8.0",
+    "dotenv": "^16.0.1",
+    "shoukaku": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0"
+  }
+}
