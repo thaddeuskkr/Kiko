@@ -5,7 +5,7 @@ module.exports = {
         .setName('ping')
         .setDescription('Replies with the bot\'s ping.'),
     permissions: ['MANAGE_CHANNELS'],
-    async execute (interaction) {
-        return interaction.reply(`**Pong!** \`${interaction.client.ws.ping}ms\``);
+    async execute (client, interaction) {
+        return interaction.reply(`**Pong!** \`${client.ws.ping}ms\``);
     }
 };
