@@ -6,6 +6,27 @@ module.exports = async (client, interaction) => {
     const command = client.commands.get(commandName);
     if (!command) return;
 
+    if (command.permissions.length > 0) {
+        if ((command.permissions.includes('OWNER') || command.category == 'owner') && !client.config.owners.includes(interaction.author.id)) {
+            const embed = new MessageEmbed()
+                .setAuthor({ name: 'Insufficient permissions', iconURL: interaction.user.avatarURL({ size: 4096 }) })
+                .setDescription('**You do not have the sufficient permissions to run this command.**\nOnly the bot owner can execute this command.')
+                .setColor('RED')
+                .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: client.user.avatarURL({ size: 4096 }) });
+            return interaction.reply({ embeds: [embed] });
+        }
+        for (let i = 0; i < command.permissions.length; i++) {
+            if (!interaction.member.permissions.has(command.permissions[i]) && !client.config.owners.includes(interaction.user.id)) {
+                const embed = new MessageEmbed()
+                    .setAuthor({ name: 'Insufficient permissions', iconURL: interaction.user.avatarURL({ size: 4096 }) })
+                    .setDescription(`**You do not have the sufficient permissions to run this command.**\nYou need the \`${command.permissions[i]}\` permission.`)
+                    .setColor('RED')
+                    .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: client.user.avatarURL({ size: 4096 }) });
+                return interaction.reply({ embeds: [embed] });
+            }
+        }
+    }
+
     try {
         await command.execute(interaction);
     } catch (err) {

@@ -9,7 +9,7 @@ module.exports = async (client, message) => {
     for (const command of client.commands) {
         commands.push(command[1].data.toJSON());
     }
-
+    
     const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
     if (message.content === 'ethereal deploy guild') {

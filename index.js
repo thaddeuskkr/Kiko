@@ -64,6 +64,7 @@ for (const category of categories) {
             client.logger.warn(`Command ${command.replace('.js', '')} has insufficient data. Skipping...`);
             break;
         }
+        cmd.category = category;
         client.commands.set(cmd.data.name, cmd);
         commandCount++;
     }
