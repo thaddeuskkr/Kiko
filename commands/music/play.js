@@ -7,12 +7,12 @@ module.exports = {
         .setDescription('Search for a song and play it.')
         .addStringOption(option => option.setName('query').setDescription('What would you like to listen to?').setRequired(true))
         .addStringOption(option => option.setName('source').setDescription('Where would you like to search? (yt, ytm, sc)').setRequired(false)),
-    permissions: [],
+    permissions: ['IN_VC'],
     async execute (client, interaction, lava) {
         if (!lava) return interaction.reply('No nodes connected.');
         const query = interaction.options.getString('query');
         const source = interaction.options.getString('source') || 'ytm';
-        if (this.checkURL()) {
+        if (this.checkURL(query)) {
             const result = await lava.rest.resolve(query);
             if (!result?.tracks.length) return interaction.reply(`No results found for your query \`${interaction.options.getString('query')}\`.`);
             const track = result.tracks.shift();
@@ -22,8 +22,11 @@ module.exports = {
             if (playlist) {
                 for (const track of result.tracks) await client.queue.handle(interaction.guild, interaction.member, interaction.channel, lava, track);
             }
+            const embed = new MessageEmbed()
+                .setColor(client.config.color)
+                .setDescription(playlist ? `Queued the playlist **${result.playlistInfo.name}**` : `Queued **${track.info.title}** by **${track.info.author}** [${prettyms(track.info.length, { colonNotation: true, millisecondsDecimalDigits: 0})}]`);
             await interaction
-                .reply(playlist ? `Queued the playlist **${result.playlistInfo.name}**.` : `Queued **${track.info.title}** by **${track.info.author}** [${prettyms(track.info.length, { colonNotation: true, millisecondsDecimalDigits: 0})}]`)
+                .reply({ embeds: [embed] })
                 .catch(() => null);
             dispatcher?.play();
             return;
