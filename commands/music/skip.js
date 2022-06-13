@@ -4,7 +4,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('skip')
         .setDescription('Skip the currently playing track.'),
-    permissions: ['PLAYING', 'IN_VC', 'SAME_VC'],
+    permissions: [],
+    checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
     async execute (client, interaction, lava, dispatcher) {
         if (!lava) return interaction.reply('No nodes connected.');
         const now = dispatcher.current;
