@@ -4,7 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Replies with the bot\'s ping.'),
-    permissions: ['MANAGE_CHANNELS'],
+    permissions: [],
     async execute (client, interaction) {
         return interaction.reply(`**Pong!** \`${client.ws.ping}ms\``);
     }
