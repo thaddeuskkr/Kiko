@@ -20,6 +20,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const config = require('./config.json');
 const { Shoukaku, Connectors } = require('shoukaku');
+const Queue = require('./util/queue.js');
 
 const allIntents = new Discord.Intents(32767);
 const client = new Discord.Client({ intents: allIntents }); // yes, i know it's stupid of me to use all intents, but i was lazy.
@@ -34,6 +35,7 @@ client.logger = require('./util/logger.js');
 client.shoukaku = shoukaku;
 client.commands = new Discord.Collection();
 client.config = config;
+client.queue = new Queue(client);
 
 let commandCount = 0;
 let eventCount = 0;
