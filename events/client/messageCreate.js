@@ -30,8 +30,9 @@ module.exports = async (client, message) => {
                     const deleteUrl = `${Routes.applicationGuildCommands(client.user.id, message.guild.id)}/${command.id}`;
                     promises.push(rest.delete(deleteUrl));
                 }
-                return Promise.all(promises);
+                return Promise.all(promises).then(() => client.logger.info(`Successfully unregistered application commands for server ${message.guild.name} (${message.guild.id})!`));
             });
+        message.reply('Success!');
     } else if (message.content === 'ethereal undeploy' || message.content === 'ethereal undeploy global') {
         rest.get(Routes.applicationCommands(client.user.id))
             .then(data => {
@@ -40,7 +41,8 @@ module.exports = async (client, message) => {
                     const deleteUrl = `${Routes.applicationCommands(client.user.id)}/${command.id}`;
                     promises.push(rest.delete(deleteUrl));
                 }
-                return Promise.all(promises);
+                return Promise.all(promises).then(() => client.logger.info('Successfully unregistered application commands globally!'));
             });
+        message.reply('Success!');
     }
 };
