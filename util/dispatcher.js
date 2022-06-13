@@ -71,7 +71,7 @@ class Dispatcher {
         this.queue.length = 0;
         this.player.connection.disconnect();
         this.client.queue.delete(this.guild.id);
-        this.client.logger.debug(`[Player] Destroyed the player & connection @ guild "${this.guild.id}"\nReason: ${reason || 'No Reason Provided'}`);
+        this.client.logger.debug(`[Player] Destroyed the player & connection @ guild "${this.guild.id}" | Reason: ${reason || 'No Reason Provided'}`);
         if (this.stopped) return;
         // this.channel.send('No more tracks in queue.').catch(() => null);
     }
