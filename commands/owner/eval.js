@@ -15,7 +15,7 @@ module.exports = {
     lastResult: null,
     _sensitivePattern: null,
     /* eslint-disable no-unused-vars */
-    async execute (client, interaction, lava) {
+    async execute (client, interaction, lava, dispatcher) {
         const lastResult = this.lastResult;
         /* eslint-enable no-unused-vars */
         const code = interaction.options.getString('code');
