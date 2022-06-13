@@ -28,9 +28,10 @@ module.exports = async (client, interaction) => {
     }
 
     const lava = client.shoukaku.getNode();
+    const dispatcher = client.queue.get(interaction.guildId);
 
     try {
-        await command.execute(client, interaction, lava);
+        await command.execute(client, interaction, lava, dispatcher);
     } catch (err) {
         client.logger.error(`Error executing command ${commandName}: ${err.message}`);
         const embed = new MessageEmbed()
