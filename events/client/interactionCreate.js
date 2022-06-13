@@ -27,7 +27,7 @@ module.exports = async (client, interaction) => {
         }
     }
 
-    const lava = client.shoukaku;
+    const lava = client.shoukaku.getNode();
 
     try {
         await command.execute(client, interaction, lava);
