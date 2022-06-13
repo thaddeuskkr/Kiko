@@ -25,10 +25,12 @@ const Queue = require('./util/queue.js');
 const allIntents = new Discord.Intents(32767);
 const client = new Discord.Client({ intents: allIntents }); // yes, i know it's stupid of me to use all intents, but i was lazy.
 const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), config.llnodes, { 
-    reconnectTries: 3, 
-    resume: true, 
-    resumeByLibrary: true, 
-    resumeKey: 'faithful' 
+    reconnectTries: 3,
+    moveOnDisconnect: false,
+    resumable: true,
+    resumeKey: 'etherealbot',
+    resumableTimeout: 30,
+    restTimeout: 10000
 });
 
 client.logger = require('./util/logger.js');
