@@ -14,6 +14,7 @@ module.exports = {
         console.log(chalk.bold(chalk.cyan(timestamp()) + chalk.yellow(' • ERROR • ')) + message);
     },
     debug: (message) => {
+        if (process.env.ENV === 'production') return;
         console.log(chalk.bold(chalk.cyan(timestamp()) + chalk.gray(' • DEBUG • ')) + message);
     }
 };
