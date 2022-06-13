@@ -6,8 +6,16 @@ module.exports = {
         .setName('play')
         .setDescription('Search for a song and play it.')
         .addStringOption(option => option.setName('query').setDescription('What would you like to listen to?').setRequired(true))
-        .addStringOption(option => option.setName('source').setDescription('Where would you like to search? (yt, ytm, sc)').setRequired(false)),
-    permissions: ['IN_VC'],
+        .addStringOption(option => option.setName('source')
+            .setDescription('Where would you like to search? (yt, ytm, sc)')
+            .setRequired(false)
+            .addChoices(
+                { name: 'YouTube', value: 'yt' },
+                { name: 'YouTube Music', value: 'ytm' },
+                { name: 'SoundCloud', value: 'sc' }
+            )),
+    permissions: [],
+    checks: ['IN_VC', 'SAME_VC'],
     async execute (client, interaction, lava) {
         if (!lava) return interaction.reply('No nodes connected.');
         const query = interaction.options.getString('query');
