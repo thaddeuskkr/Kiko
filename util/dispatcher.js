@@ -20,7 +20,7 @@ class Dispatcher {
         };
 
         this.player
-            .on('start', () => {
+            .on('start', async () => {
                 if (this.repeat === 'one') {
                     if (_notifiedOnce) return;
                     else _notifiedOnce = true; 
@@ -33,13 +33,18 @@ class Dispatcher {
                     .setAuthor({ name: 'Now playing', iconURL: client.user.avatarURL({ size: 4096 }), url: this.current.info.uri })
                     .setDescription(`**${this.current.info.title}** - **${this.current.info.author}** [${Dispatcher.humanizeTime(this.current.info.length)}]`)
                     .setFooter({ text: `Requested by ${this.current.info.requester.tag}`, iconURL: this.current.info.requester.avatarURL({ size: 4096 }) });
-                this.channel
+                const msg = await this.channel
                     .send({ embeds: [ embed ] })
                     .catch(() => null);
+                this.player.nowPlayingMessage = msg;
             })
-            .on('end', () => {
+            .on('end', async () => {
                 if (this.repeat === 'one') this.queue.unshift(this.current);
                 if (this.repeat === 'all') this.queue.push(this.current);
+                if (this.player.nowPlayingMessage) {
+                    await this.player.nowPlayingMessage.delete().catch(() => null);
+                    this.player.nowPlayingMessage = undefined;
+                }
                 this.play();
             })
             .on('stuck', () => {
@@ -67,11 +72,15 @@ class Dispatcher {
             .playTrack({ track: this.current.track });
     }
     
-    destroy(reason) {
+    async destroy(reason) {
         this.queue.length = 0;
         this.player.connection.disconnect();
         this.client.queue.delete(this.guild.id);
         this.client.logger.debug(`[Player] Destroyed the player & connection @ guild "${this.guild.id}" | Reason: ${reason || 'No Reason Provided'}`);
+        if (this.player.nowPlayingMessage) {
+            await this.player.nowPlayingMessage.delete().catch(() => null);
+            this.player.nowPlayingMessage = undefined;
+        }
         if (this.stopped) return;
         // this.channel.send('No more tracks in queue.').catch(() => null);
     }
