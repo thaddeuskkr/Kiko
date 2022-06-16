@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
+const resolveSpotify = require('../../util/resolveSpotify.js');
 const prettyms = require('pretty-ms');
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,7 +8,7 @@ module.exports = {
         .setDescription('Search for a song and play it.')
         .addStringOption(option => option.setName('query').setDescription('What would you like to listen to?').setRequired(true))
         .addStringOption(option => option.setName('source')
-            .setDescription('Where would you like to search? (yt, ytm, sc)')
+            .setDescription('Where would you like to search?')
             .setRequired(false)
             .addChoices(
                 { name: 'YouTube', value: 'yt' },
@@ -21,6 +22,10 @@ module.exports = {
         const query = interaction.options.getString('query');
         const source = interaction.options.getString('source') || 'ytm';
         if (this.checkURL(query)) {
+            if (/^(spotify:|https:\/\/[a-z]+\.spotify\.com\/)/.test(query)) {
+                await resolveSpotify(query, lava, client, interaction, source);
+                return;
+            }
             const result = await lava.rest.resolve(query);
             if (!result?.tracks.length) return interaction.reply(`No results found for your query \`${interaction.options.getString('query')}\`.`);
             const track = result.tracks.shift();
@@ -32,7 +37,7 @@ module.exports = {
             }
             const embed = new MessageEmbed()
                 .setColor(client.config.color)
-                .setDescription(playlist ? `Queued the playlist **${result.playlistInfo.name}**` : `Queued **${track.info.title}** by **${track.info.author}** [${prettyms(track.info.length, { colonNotation: true, millisecondsDecimalDigits: 0})}]`);
+                .setDescription(playlist ? `Queued playlist **${result.playlistInfo.name}**` : `Queued **${track.info.title}** by **${track.info.author}** [${prettyms(track.info.length, { colonNotation: true, millisecondsDecimalDigits: 0})}]`);
             await interaction
                 .reply({ embeds: [embed] })
                 .catch(() => null);
