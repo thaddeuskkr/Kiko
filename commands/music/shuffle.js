@@ -10,7 +10,7 @@ module.exports = {
         if (!lava) return interaction.reply('No nodes connected.');
         dispatcher.queue = dispatcher.queue.sort(() => Math.random() - 0.5);
         const embed = new MessageEmbed()
-            .setDescription(`Shuffled ${dispatcher.queue.length} tracks.`)
+            .setDescription(`Shuffled **${dispatcher.queue.length}** tracks.`)
             .setColor(client.config.color);
         interaction.reply({ embeds: [embed] });
     }
