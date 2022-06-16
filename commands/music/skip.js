@@ -12,6 +12,10 @@ module.exports = {
         const embed = new MessageEmbed()
             .setDescription(`Skipped **${now.info.title}** by **${now.info.author}**`)
             .setColor(client.config.color);
+        if (dispatcher.repeat === 'one') {
+            dispatcher.repeat = 'off';
+            embed.setFooter({ text: 'Automatically disabled track loop.' });
+        }
         await dispatcher.player.stopTrack();
         interaction.reply({ embeds: [embed] });
     }
