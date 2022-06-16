@@ -10,6 +10,12 @@ module.exports = {
     async execute (client, interaction, lava, dispatcher) {
         if (!lava) return interaction.reply('No nodes connected.');
         const oldVolume = dispatcher.player.filters.volume * 100;
+        if (!newVolume) {
+            const emb = new MessageEmbed()
+                .setColor(client.config.color)
+                .setDescription(`The current volume is **${oldVolume}%**.`);
+            return interaction.reply({ embeds: [emb] });
+        }
         const newVolume = interaction.options.getInteger('volume');
         if (!inRange(newVolume, 0, 200)) return interaction.reply('Volume must be between 0 and 200.');
         dispatcher.player.setVolume(newVolume / 100);
