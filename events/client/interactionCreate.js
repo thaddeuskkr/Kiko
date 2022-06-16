@@ -12,10 +12,10 @@ module.exports = async (client, interaction) => {
     if (command.permissions.length > 0) {
         if ((command.permissions.includes('OWNER') || command.category == 'owner') && !client.config.owners.includes(interaction.user.id)) {
             const embed = new MessageEmbed()
-                .setAuthor({ name: 'Insufficient permissions', iconURL: interaction.user.avatarURL({ size: 4096 }) })
+                .setAuthor({ name: 'Insufficient permissions' })
                 .setDescription('**You do not have the sufficient permissions to run this command.**\nOnly the bot owner can execute this command.')
                 .setColor('RED')
-                .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: client.user.avatarURL({ size: 4096 }) });
+                .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });
             return interaction.reply({ embeds: [embed] });
         }
         const index = command.permissions.indexOf('OWNER');
@@ -25,19 +25,19 @@ module.exports = async (client, interaction) => {
         for (let i = 0; i < command.permissions.length; i++) {
             if (!interaction.member.permissions.has(command.permissions[i]) && !client.config.owners.includes(interaction.user.id)) {
                 const embed = new MessageEmbed()
-                    .setAuthor({ name: 'Insufficient permissions', iconURL: interaction.user.avatarURL({ size: 4096 }) })
+                    .setAuthor({ name: 'Insufficient permissions' })
                     .setDescription(`**You do not have the sufficient permissions to run this command.**\nYou need the \`${command.permissions[i]}\` permission.`)
                     .setColor('RED')
-                    .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: client.user.avatarURL({ size: 4096 }) });
+                    .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 })});
                 return interaction.reply({ embeds: [embed] });
             }
         }
     }
     if (command.checks?.length > 0) {
         const embed = new MessageEmbed()
-            .setAuthor({ name: 'Error', iconURL: interaction.user.avatarURL({ size: 4096 }) })
+            .setAuthor({ name: 'Error' })
             .setColor('RED')
-            .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: client.user.avatarURL({ size: 4096 }) });
+            .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });
         if (command.checks.includes('IN_VC') && interaction.member.voice.channelId == null) {
             embed.setDescription('You are not in a voice channel.');
             return interaction.reply({ embeds: [embed] });
@@ -57,7 +57,7 @@ module.exports = async (client, interaction) => {
     } catch (err) {
         client.logger.error(`Error executing command ${commandName}: ${err.message}`);
         const embed = new MessageEmbed()
-            .setAuthor({ name: 'Error', iconURL: client.user.avatarURL({ size: 4096 }) })
+            .setAuthor({ name: 'Error' })
             .setColor(client.config.color)
             .setDescription(`**Error while executing command ${commandName}:**\n\`\`\`${err.message}\`\`\``)
             .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });

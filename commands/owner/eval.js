@@ -30,10 +30,10 @@ module.exports = {
         this.hrStart = process.hrtime();
         const result = this.makeResultMessages(this.lastResult, hrDiff, code);
         const embed = new Discord.MessageEmbed()
-            .setAuthor({ name: 'Success', iconURL: interaction.user.avatarURL({ size: 4096 }) })
+            .setAuthor({ name: 'Success' })
             .setColor(client.config.color)
             .setDescription(`*Executed in ${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.*`)
-            .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: client.user.avatarURL({ size: 4096 }) });
+            .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });
         await interaction.reply({ embeds: [embed] });
         if (Array.isArray(result)) {
             return result.map(item => interaction.channel.send({ content: item }));
