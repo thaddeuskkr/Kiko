@@ -36,7 +36,7 @@ module.exports = {
             }
             const embed = new MessageEmbed()
                 .setColor(client.config.color)
-                .setDescription(playlist ? `Queued playlist **${result.playlistInfo.name}**` : `Queued **${track.info.title}** by **${track.info.author}** [${client.util.formatTime(track.info.length)}]`);
+                .setDescription(playlist ? `Queued playlist **${result.playlistInfo.name}**` : `Queued **${track.info.title}** by **${track.info.author}** [${client.util.formatTime(track.info.length, track.info.isStream)}]`);
             await interaction
                 .reply({ embeds: [embed] })
                 .catch(() => null);
@@ -50,7 +50,7 @@ module.exports = {
         const dispatcher = await client.queue.handle(interaction.guild, interaction.member, interaction.channel, lava, track);
         if (dispatcher === 'Busy') return interaction.reply('Dispatcher is currently busy and connecting to a voice channel.');
         const embed = new MessageEmbed()
-            .setDescription(`Queued **${track.info.title}** by **${track.info.author}** [${client.util.formatTime(track.info.length)}]`)
+            .setDescription(`Queued **${track.info.title}** by **${track.info.author}** [${client.util.formatTime(track.info.length, track.info.isStream)}]`)
             .setColor(client.config.color);
         await interaction.reply({ embeds: [embed] });
         dispatcher?.play();

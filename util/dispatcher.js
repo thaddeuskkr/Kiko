@@ -30,7 +30,7 @@ class Dispatcher {
                 const embed = new MessageEmbed()
                     .setColor(this.client.config.color)
                     .setAuthor({ name: 'Now playing', iconURL: client.user.avatarURL({ size: 4096 }), url: this.current.info.uri })
-                    .setDescription(`**${this.current.info.title}** - **${this.current.info.author}** [${client.util.formatTime(this.current.info.length)}]`)
+                    .setDescription(`**${this.current.info.title}** - **${this.current.info.author}** [${client.util.formatTime(this.current.info.length, this.current.info.isStream)}]`)
                     .setFooter({ text: `Requested by ${this.current.info.requester.tag}`, iconURL: this.current.info.requester.avatarURL({ size: 4096 }) });
                 const msg = await this.channel
                     .send({ embeds: [ embed ] })

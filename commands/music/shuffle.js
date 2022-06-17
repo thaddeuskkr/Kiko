@@ -7,7 +7,6 @@ module.exports = {
     permissions: [],
     checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
     async execute (client, interaction, lava, dispatcher) {
-        if (!lava) return interaction.reply('No nodes connected.');
         dispatcher.queue = dispatcher.queue.sort(() => Math.random() - 0.5);
         const embed = new MessageEmbed()
             .setDescription(`Shuffled **${dispatcher.queue.length}** tracks.`)

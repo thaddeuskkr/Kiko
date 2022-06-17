@@ -8,7 +8,6 @@ module.exports = {
     permissions: [],
     checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
     async execute (client, interaction, lava, dispatcher) {
-        if (!lava) return interaction.reply('No nodes connected.');
         const oldVolume = dispatcher.player.filters.volume * 100;
         if (!newVolume) {
             const emb = new MessageEmbed()

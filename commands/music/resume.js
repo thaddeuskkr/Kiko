@@ -7,7 +7,6 @@ module.exports = {
     permissions: [],
     checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
     async execute (client, interaction, lava, dispatcher) {
-        if (!lava) return interaction.reply('No nodes connected.');
         const now = dispatcher.current;
         const embed = new MessageEmbed()
             .setDescription(`Resumed **${now.info.title}** by **${now.info.author}**`)
