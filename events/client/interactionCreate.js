@@ -61,6 +61,7 @@ module.exports = async (client, interaction) => {
             .setColor(client.config.color)
             .setDescription(`**Error while executing command ${commandName}:**\n\`\`\`${err.message}\`\`\``)
             .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });
+        if (interaction.deferred == true) return await interaction.editReply({ embeds: [ embed ], ephemeral: true });
         await interaction.reply({ embeds: [ embed ], ephemeral: true });
     }
 };
