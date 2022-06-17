@@ -24,7 +24,7 @@ module.exports = {
             case buttonList[0].customId:
                 page = page > 0 ? --page : pages.length - 1;
                 break;
-            case buttonList[1].customid:
+            case buttonList[1].customId:
                 page = page + 1 < pages.length ? ++page : 0;
                 break;
             default:
@@ -50,5 +50,16 @@ module.exports = {
             }
         });
         return currentPage;
+    },
+    createProgressBar: (current, end, size) => {
+        if (isNaN(current) || isNaN(end)) return 'Arguments current and end have to be integers.';
+        const percentage = current / end;
+        const progress = Math.round(size * percentage);
+        const emptyProgress = size - progress;
+
+        const progressText = '▇'.repeat(progress);
+        const emptyProgressText = '—'.repeat(emptyProgress);
+
+        return `\`[${progressText}${emptyProgressText}]\``;
     }
 };
