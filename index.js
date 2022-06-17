@@ -30,7 +30,6 @@ const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), config.llnodes, 
     resumable: true,
     resumeKey: 'etherealbot',
     resumableTimeout: 30,
-    restTimeout: 10000
 });
 
 client.logger = require('./util/logger.js');
