@@ -1,7 +1,6 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const { getData } = require('spotify-url-info')(fetch);
 const { MessageEmbed } = require('discord.js');
-const prettyms = require('pretty-ms');
 module.exports = async (url, lava, client, interaction, source) => {
     const data = await getData(url);
     if (data.type === 'track') {
@@ -16,7 +15,7 @@ module.exports = async (url, lava, client, interaction, source) => {
         const dispatcher = await client.queue.handle(interaction.guild, interaction.member, interaction.channel, lava, track);
         if (dispatcher === 'Busy') return interaction.reply('Dispatcher is currently busy and connecting to a voice channel.');
         const embed = new MessageEmbed()
-            .setDescription(`Queued **${track.info.title}** by **${track.info.author}** [${prettyms(track.info.length, { colonNotation: true, millisecondsDecimalDigits: 0})}]`)
+            .setDescription(`Queued **${track.info.title}** by **${track.info.author}** [${client.util.formatTime(track.info.length)}]`)
             .setColor(client.config.color);
         await interaction.reply({ embeds: [embed] });
         dispatcher?.play();

@@ -34,10 +34,11 @@ const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), config.llnodes, 
 });
 
 client.logger = require('./util/logger.js');
-client.shoukaku = shoukaku;
+client.util = require('./util/util.js');
 client.commands = new Discord.Collection();
-client.config = config;
 client.queue = new Queue(client);
+client.shoukaku = shoukaku;
+client.config = config;
 
 let commandCount = 0;
 let eventCount = 0;
@@ -78,3 +79,12 @@ client.logger.info(`Loaded ${eventCount} events!`);
 client.logger.info(`Loaded ${commandCount} commands in ${categories.length} categories!`);
 
 client.login(process.env.TOKEN);
+
+// Process events
+process.on('unhandledRejection', async (reason, promise) => {
+    client.logger.error(`Unhandled rejection at ${promise}:`);
+    console.log(reason);
+    for (const ownerId of client.config.owners) {
+        await client.users.cache.get(ownerId).send(`**Unhandled rejection at ${promise}:**\n\`\`\`${reason}\`\`\``);
+    }
+});

@@ -1,5 +1,4 @@
 const { MessageEmbed } = require('discord.js');
-const prettyms = require('pretty-ms');
 
 class Dispatcher {
     constructor({ client, guild, channel, player }) {
@@ -31,7 +30,7 @@ class Dispatcher {
                 const embed = new MessageEmbed()
                     .setColor(this.client.config.color)
                     .setAuthor({ name: 'Now playing', iconURL: client.user.avatarURL({ size: 4096 }), url: this.current.info.uri })
-                    .setDescription(`**${this.current.info.title}** - **${this.current.info.author}** [${Dispatcher.humanizeTime(this.current.info.length)}]`)
+                    .setDescription(`**${this.current.info.title}** - **${this.current.info.author}** [${client.util.formatTime(this.current.info.length)}]`)
                     .setFooter({ text: `Requested by ${this.current.info.requester.tag}`, iconURL: this.current.info.requester.avatarURL({ size: 4096 }) });
                 const msg = await this.channel
                     .send({ embeds: [ embed ] })
@@ -54,10 +53,6 @@ class Dispatcher {
             })
             .on('closed', _errorHandler)
             .on('error', _errorHandler);
-    }
-
-    static humanizeTime(ms) {
-        return prettyms(ms, { colonNotation: true, millisecondsDecimalDigits: 0 });
     }
 
     get exists() {
