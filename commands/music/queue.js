@@ -10,35 +10,44 @@ module.exports = {
     checks: ['PLAYING', 'IN_VC'],
     async execute (client, interaction, lava, dispatcher) {
         await interaction.deferReply();
-        let currentDuration = client.util.formatTime(dispatcher.current.info.length, dispatcher.current.info.isStream);
+        const currentDuration = client.util.formatTime(dispatcher.current.info.length, dispatcher.current.info.isStream);
+        const current = dispatcher.player.position;
         const embeds = [];
-        let chunked = _.chunk(dispatcher.queue, tracksPerPage);
-        let totalDurationMs = 0;
-        for (const track of dispatcher.queue) {
-            totalDurationMs += track.info.length;
-        }
-        let totalDuration = client.util.formatTime(totalDurationMs);
-        if (dispatcher.queue.find(x => x.info.isStream === true)) totalDuration = '∞';
-        for (let i = 0; i < chunked.length; i++) {
-            let msgArr = [];
-            msgArr.push(`**Total duration:** \`${totalDuration}\``);
-            msgArr.push(`**Now playing:** ${dispatcher.current.info.title} - ${dispatcher.current.info.author} [${currentDuration}] (${dispatcher.current.requester.tag})`);
-            for (let e = 0; e < chunked[i].length; e++) {
-                let track = chunked[i][e];
-                let trackDuration = client.util.formatTime(track.info.length, track.info.isStream);
-                msgArr.push(`**\`${e + 10 * i + 1}\`**: ${Util.escapeMarkdown(track.info.title)} [${trackDuration}] (${track.requester.tag})`);
-            }
-            msgArr.push(`\n**${dispatcher.queue.length}** tracks in queue.`);
-            let text = msgArr.join('\n');
-            embeds.push(text);
-        }
         let finalEmbeds = [];
-        for (const text of embeds) {
-            const embed = new MessageEmbed()
+        const bar = dispatcher.current.info.isStream ? '' : client.util.createProgressBar(current, dispatcher.current.info.length, 20);
+        if (!dispatcher.queue?.length) {
+            finalEmbeds.push(new MessageEmbed()
                 .setAuthor({ name: `Queue for ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ size: 4096 }) })
-                .setDescription(text)
-                .setColor(client.config.color);
-            finalEmbeds.push(embed);
+                .setDescription(`**__Now playing:__**\n**${dispatcher.current.info.title}** - **${dispatcher.current.info.author}** [${currentDuration}] (${Util.escapeMarkdown(dispatcher.current.info.requester.tag)})\n${client.util.formatTime(current)} ${bar} ${currentDuration}\n\n**No tracks in queue.**`)
+                .setColor(client.config.color));
+        } else {
+            let chunked = _.chunk(dispatcher.queue, tracksPerPage);
+            let totalDurationMs = 0;
+            for (const track of dispatcher.queue) {
+                totalDurationMs += track.info.length;
+            }
+            let totalDuration = client.util.formatTime(totalDurationMs);
+            if (dispatcher.queue.find(x => x.info.isStream === true)) totalDuration = '∞';
+            for (let i = 0; i < chunked.length; i++) {
+                let msgArr = [];
+                msgArr.push(`**__Now playing:__**\n**${dispatcher.current.info.title}** - **${dispatcher.current.info.author}** [${currentDuration}] (${Util.escapeMarkdown(dispatcher.current.info.requester.tag)})`);
+                msgArr.push(`${client.util.formatTime(current)} ${bar} ${currentDuration}\n`);
+                for (let e = 0; e < chunked[i].length; e++) {
+                    let track = chunked[i][e];
+                    let trackDuration = client.util.formatTime(track.info.length, track.info.isStream);
+                    msgArr.push(`**\`${e + 10 * i + 1}\`**: **${Util.escapeMarkdown(track.info.title)}** [${trackDuration}] (${Util.escapeMarkdown(track.info.requester.tag)})`);
+                }
+                msgArr.push(`\n**${dispatcher.queue.length}** tracks in queue.\n**Total duration:** \`${totalDuration}\``);
+                let text = msgArr.join('\n');
+                embeds.push(text);
+            }
+            for (const text of embeds) {
+                const embed = new MessageEmbed()
+                    .setAuthor({ name: `Queue for ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ size: 4096 }) })
+                    .setDescription(text)
+                    .setColor(client.config.color);
+                finalEmbeds.push(embed);
+            }
         }
         const buttons = [
             new MessageButton()
