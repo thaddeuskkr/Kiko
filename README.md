@@ -2,7 +2,7 @@
 Ethereal Discord Bot - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.
 
 ### Features
-- Currently, the bot only has the base framework built in. However, there is much more to come!
+- Fairly reliable music system
 
 ### Contact
 - **Discord:** faith.ful_#9155
