@@ -13,6 +13,7 @@ module.exports = {
         dispatcher.repeat = 'off';
         dispatcher.stopped = true;
         dispatcher.player.stopTrack();
+        interaction.guild.me.voice.disconnect();
         Wait(500);
         const embed = new MessageEmbed()
             .setDescription('Stopped the player and cleared the queue.')
