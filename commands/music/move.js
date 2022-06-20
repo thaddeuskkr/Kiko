@@ -4,8 +4,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('move')
         .setDescription('Move tracks through the queue using their old and new index.')
-        .addIntegerOption(option => option.setName('oldIndex').setDescription('The index of the track to move.').setRequired(true))
-        .addIntegerOption(option => option.setName('newIndex').setDescription('Where to put the track.').setRequired(true)),
+        .addIntegerOption(option => option.setName('oldindex').setDescription('The index of the track to move.').setRequired(true))
+        .addIntegerOption(option => option.setName('newindex').setDescription('Where to put the track.').setRequired(true)),
     permissions: [],
     checks: ['PLAYING', 'IN_VC', 'SAME_VC', 'QUEUE'],
     async execute (client, interaction, lava, dispatcher) {
