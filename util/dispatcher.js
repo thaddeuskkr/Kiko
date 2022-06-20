@@ -13,7 +13,10 @@ class Dispatcher {
 
         let _notifiedOnce = false;
         let _errorHandler = data => {
-            if (data instanceof Error || data instanceof Object) this.client.logger.error(data);
+            if (data instanceof Error || data instanceof Object) {
+                this.client.logger.error('Error in dispatcher');
+                console.log(data);
+            }
             this.queue.length = 0;
             this.destroy();
         };
