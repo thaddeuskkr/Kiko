@@ -27,11 +27,11 @@ const client = new Discord.Client({ intents: allIntents }); // yes, i know it's 
 const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), config.llnodes, { 
     reconnectTries: 3,
     moveOnDisconnect: false,
-    resume: true,
-    resumeKey: 'etherealbot',
-    resumeTimeout: 60,
+    // resume: true,
+    // resumeKey: 'etherealbot',
+    // resumeTimeout: 60,
     resumeByLibrary: true,
-    alwaysSendResumeKey: true
+    // alwaysSendResumeKey: true
 });
 
 client.logger = require('./util/logger.js');
