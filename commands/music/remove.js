@@ -6,7 +6,7 @@ module.exports = {
         .setDescription('Remove a selected track index from the queue.')
         .addIntegerOption(option => option.setName('index').setDescription('The index of the track to remove.').setRequired(true)),
     permissions: [],
-    checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
+    checks: ['PLAYING', 'IN_VC', 'SAME_VC', 'QUEUE'],
     async execute (client, interaction, lava, dispatcher) {
         const index = interaction.options.getInteger('index') - 1;
         const removedTrack = dispatcher.queue.splice(index, 1)[0];

@@ -5,7 +5,7 @@ module.exports = {
         .setName('clear')
         .setDescription('Clear the queue.'),
     permissions: [],
-    checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
+    checks: ['PLAYING', 'IN_VC', 'SAME_VC', 'QUEUE'],
     async execute (client, interaction, lava, dispatcher) {
         const queueLength = dispatcher.queue.length;
         dispatcher.queue.length = 0;

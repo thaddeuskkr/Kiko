@@ -5,7 +5,7 @@ module.exports = {
         .setName('shuffle')
         .setDescription('Shuffle the queue.'),
     permissions: [],
-    checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
+    checks: ['PLAYING', 'IN_VC', 'SAME_VC', 'QUEUE'],
     async execute (client, interaction, lava, dispatcher) {
         dispatcher.queue = dispatcher.queue.sort(() => Math.random() - 0.5);
         const embed = new MessageEmbed()

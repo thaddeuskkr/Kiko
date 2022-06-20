@@ -50,6 +50,10 @@ module.exports = async (client, interaction) => {
             embed.setDescription('There is nothing playing.');
             return interaction.reply({ embeds: [embed] });
         }
+        if (command.checks.includes('QUEUE') && !dispatcher.queue?.length) {
+            embed.setDescription('There are no tracks in queue.');
+            return interaction.reply({ embeds: [embed] });
+        }
     }
 
     try {
