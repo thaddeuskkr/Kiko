@@ -9,8 +9,8 @@ module.exports = {
     permissions: [],
     checks: ['PLAYING', 'IN_VC', 'SAME_VC', 'QUEUE'],
     async execute (client, interaction, lava, dispatcher) {
-        const oldIndex = interaction.options.getInteger('oldIndex');
-        const newIndex = interaction.options.getInteger('newIndex');
+        const oldIndex = interaction.options.getInteger('oldindex');
+        const newIndex = interaction.options.getInteger('newindex');
         dispatcher.queue = array_move(dispatcher.queue, oldIndex - 1, newIndex - 1);
         const embed = new MessageEmbed()
             .setDescription(`Moved **${dispatcher.queue[newIndex - 1].info.title}** by **${dispatcher.queue[newIndex - 1].info.author}** to position **${newIndex}** in the queue.`)
