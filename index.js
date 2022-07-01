@@ -21,6 +21,7 @@ const fs = require('fs');
 const config = require('./config.json');
 const { Shoukaku, Connectors } = require('shoukaku');
 const Queue = require('./util/queue.js');
+const Keyv = require('keyv');
 
 const allIntents = new Discord.Intents(32767);
 const client = new Discord.Client({ intents: allIntents }); // yes, i know it's stupid of me to use all intents, but i was lazy.
@@ -33,6 +34,7 @@ const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), config.llnodes, 
     resumeByLibrary: true,
     // alwaysSendResumeKey: true
 });
+const keyv = new Keyv(process.env.KEYV, { namespace: 'ethereal' });
 
 client.logger = require('./util/logger.js');
 client.util = require('./util/util.js');
@@ -40,6 +42,7 @@ client.commands = new Discord.Collection();
 client.queue = new Queue(client);
 client.shoukaku = shoukaku;
 client.config = config;
+client.db = keyv;
 
 let commandCount = 0;
 let eventCount = 0;
@@ -89,3 +92,6 @@ process.on('unhandledRejection', async (reason, promise) => {
         await client.users.cache.get(ownerId).send(`**Unhandled rejection at ${promise}:**\n\`\`\`${reason}\`\`\``);
     }
 });
+
+// Keyv handling
+keyv.on('error', err => client.logger.error(err.message));
