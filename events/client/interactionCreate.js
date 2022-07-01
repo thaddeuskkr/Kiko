@@ -60,6 +60,7 @@ module.exports = async (client, interaction) => {
         await command.execute(client, interaction, lava, dispatcher);
     } catch (err) {
         client.logger.error(`Error executing command ${commandName}: ${err.message}`);
+        console.log(err);
         const embed = new MessageEmbed()
             .setAuthor({ name: 'Error' })
             .setColor(client.config.color)
