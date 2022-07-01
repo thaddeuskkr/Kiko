@@ -20,6 +20,7 @@ module.exports = {
         const filter = (i) => i.customId === buttonList[0].customId || i.customId === buttonList[1].customId;
         const collector = await currentPage.createMessageComponentCollector({ filter, time: timeout });
         collector.on('collect', async (i) => {
+            if (i.user.id !== interaction.user.id) return i.reply('Only the user who invocated the command can use the buttons.', { ephemeral: true });
             switch (i.customId) {
             case buttonList[0].customId:
                 page = page > 0 ? --page : pages.length - 1;
