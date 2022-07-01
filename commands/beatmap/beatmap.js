@@ -95,6 +95,8 @@ module.exports = {
                     .setStyle('PRIMARY')
             ];
             client.util.pagination(interaction, embedArr, buttons);
+        } else if (subcommand === 'recent') {
+            // Code goes here
         }
         async function request(endpoint, args) {
             const response = await fetch(`${baseURL}${endpoint}?${args}`);
