@@ -12,7 +12,35 @@ module.exports = {
         .addSubcommand(subcommand => subcommand
             .setName('userinfo')
             .setDescription('Gets information about a user in the beatmap server.')
-            .addStringOption(option => option.setName('user').setDescription('The user name / ID.'))),
+            .addStringOption(option => option
+                .setName('user')
+                .setDescription('The user name / ID.')))
+        .addSubcommand(subcommand => subcommand
+            .setName('recent')
+            .setDescription('Shows recent plays for a specified game mode for a user.')
+            .addStringOption(option => option
+                .setName('user')
+                .setDescription('The user name / ID.'))
+            .addStringOption(option => option
+                .setName('gamemode')
+                .setDescription('The game mode to show recent plays for.')
+                .addChoices(
+                    { name: 'osu!', value: '0' },
+                    { name: 'osu!taiko', value: '1' },
+                    { name: 'osu!catch', value: '2' },
+                    { name: 'osu!mania', value: '3' },
+                    { name: 'osu! (Relax)', value: '4' },
+                    { name: 'osu!taiko (Relax)', value: '5' },
+                    { name: 'osu!catch (Relax)', value: '6' },
+                    { name: 'osu! (Autopilot)', value: '8' }
+                )))
+        .addSubcommand(subcommand => subcommand
+            .setName('link')
+            .setDescription('Links your Discord account to an account on the beatmap server.')
+            .addStringOption(option => option
+                .setName('user')
+                .setDescription('The user name / ID.')
+                .setRequired(true))),
     permissions: [],
     checks: [],
     async execute (client, interaction) {
@@ -23,8 +51,11 @@ module.exports = {
             if (!linkedId && !interaction.options?.getString('user')) {
                 return interaction.reply('You did not specify a player, and there are no linked accounts to your Discord account.');
             }
-            let u = await request('/get_player_info', `id=${interaction.options.getString('user')}&scope=${scope}`);
-            if (!u.status) u = await request('/get_player_info', `name=${interaction.options.getString('user')}&scope=${scope}`);
+            let user;
+            if (linkedId) user = linkedId;
+            else user = interaction.options.getString('user');
+            let u = await request('/get_player_info', `id=${user}&scope=${scope}`);
+            if (!u.status) u = await request('/get_player_info', `name=${user}&scope=${scope}`);
             if (u.status !== 'success') {
                 return interaction.reply('**Player not found.** Please check that you spelled the name correctly or entered a valid ID.');
             }
@@ -122,7 +153,25 @@ module.exports = {
             ];
             client.util.pagination(interaction, embedArr, buttons);
         } else if (subcommand === 'recent') {
-            // Code goes here
+            return interaction.reply('This command is not ready for use.');
+        } else if (subcommand === 'link') {
+            const user = interaction.options.getString('user');
+            const linkedId = await client.db.get(`beatmap-linked-${interaction.user.id}`);
+            if (linkedId) {
+                if (!interaction.channel[`warned-${interaction.user.id}`] || interaction.channel[`warned-${interaction.user.id}`] == false) {
+                    const linkedUser = await request('/get_player_info', `id=${linkedId}&scope=info`);
+                    interaction.channel[`warned-${interaction.user.id}`] = true;
+                    return interaction.reply(`**You are already linked to ${linkedUser.player.info.name} (${linkedUser.player.info.id}).** To ignore this warning and proceed, run this command again. *(Tip: use Ctrl+Z to save some time)*`);
+                }
+            }
+            let u = await request('/get_player_info', `id=${user}&scope=info`);
+            if (!u.status) u = await request('/get_player_info', `name=${user}&scope=info`);
+            if (u.status !== 'success') {
+                return interaction.reply('**Player not found.** Please check that you spelled the name correctly or entered a valid ID.');
+            }
+            await client.db.set(`beatmap-linked-${interaction.user.id}`, u.player.info.id);
+            interaction.member.roles.add('992398172347453510');
+            return interaction.reply(`**Successfully linked beatmap.tk account!** You may now use commands without specifying a \`user\` argument.\n\`${interaction.user.tag} ↔ ${u.player.info.name}\``);
         }
         async function request(endpoint, args) {
             const response = await fetch(`${baseURL}${endpoint}?${args}`);
