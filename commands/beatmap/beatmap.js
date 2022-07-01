@@ -32,7 +32,8 @@ module.exports = {
             let stats = u.player.stats;
             const embedArr = [];
             const embed1 = new MessageEmbed()
-                .setAuthor({ name: `${player.name} <${player.id}>` })
+                .setAuthor({ name: `${player.name}`, iconURL: `https://countryflagsapi.com/png/${player.country}` })
+                .setDescription('*Paginate to view stats for individual game modes.*')
                 .setThumbnail(`https://a.beatmap.tk/${player.id}`)
                 .setTitle('User information')
                 .setURL(`https://beatmap.tk/u/${player.id}`)
@@ -40,7 +41,6 @@ module.exports = {
                 .setImage('https://i.imgur.com/OYxjnMX.gif')
                 .addFields([
                     { name: 'ID:', value: player.id.toString(), inline: true },
-                    { name: 'Name:', value: player.name, inline: true },
                     { name: 'Privileges bits:', value: `\`${player.priv.toString()}\``, inline: true },
                     { name: 'Country:', value: player.country.toUpperCase(), inline: true },
                     { name: 'Donor status:', value: player.donor_end > 0 ? `Ends <t:${player.donor_end}:R>` : 'No donor status', inline: true },
@@ -61,27 +61,53 @@ module.exports = {
                 if (st.playtime == 0) continue;
 
                 const embed = new MessageEmbed()
-                    .setAuthor({ name: `${player.name} <${player.id}>` })
+                    .setAuthor({ name: `${player.name}`, iconURL: `https://countryflagsapi.com/png/${player.country}` })
                     .setThumbnail(`https://a.beatmap.tk/${player.id}`)
                     .setTitle(`User statistics - ${stats[i].gamemode}`)
                     .setURL(`https://beatmap.tk/u/${player.id}`)
                     .setColor(client.config.color)
                     .setImage('https://i.imgur.com/OYxjnMX.gif')
-                    .addFields([
-                        { name: 'Country rank:', value: st.country_rank.toString(), inline: true },
-                        { name: 'Total score:', value: st.tscore.toString(), inline: true },
-                        { name: 'Ranked score:', value: st.rscore.toString(), inline: true },
-                        { name: 'PP:', value: st.pp.toString(), inline: true },
-                        { name: 'Play count:', value: st.plays.toString(), inline: true },
-                        { name: 'Play time:', value: prettyms(st.playtime * 1000, { verbose: true, secondsDecimalDigits: 0, millisecondsDecimalDigits: 0 }), inline: true },
-                        { name: 'Accuracy (%):', value: `${st.acc.toFixed(2)}%`, inline: true },
-                        { name: 'Maximum combo:', value: st.max_combo.toString(), inline: true },
-                        { name: 'XH count:', value: st.xh_count.toString(), inline: true },
-                        { name: 'X count:', value: st.x_count.toString(), inline: true },
-                        { name: 'SH count:', value: st.sh_count.toString(), inline: true },
-                        { name: 'S count:', value: st.s_count.toString(), inline: true },
-                        { name: 'A count:', value: st.a_count.toString(), inline: true }
-                    ]);
+                    .setDescription(
+                        `**Country rank:** \`#${st.country_rank}\`\n` + 
+                        `**Ranked score:** \`${st.rscore}/${st.tscore}\`\n` +
+                        `**Performance:** \`${st.pp}pp\`\n` +
+                        `**Plays:** \`${st.plays} (${prettyms(st.playtime * 1000, { secondsDecimalDigits: 0, millisecondsDecimalDigits: 0 })})\`\n` +
+                        `**Accuracy:** \`${st.acc.toFixed(2)}%\`\n` +
+                        `**Max. combo:** \`${st.max_combo}\`\n` +
+                        `**SS count:** \`${st.x_count + st.xh_count}\`\n` +
+                        `**S count:** \`${st.sh_count + st.s_count}\`\n` +
+                        `**A count:** \`${st.a_count}\`\n`
+                    );
+                    /* Way too many fields.
+                    .addFields(i == 3 ? 
+                        [
+                            { name: 'Country rank:', value: st.country_rank.toString(), inline: true },
+                            { name: 'Total score:', value: st.tscore.toString(), inline: true },
+                            { name: 'Ranked score:', value: st.rscore.toString(), inline: true },
+                            { name: 'PP:', value: st.pp.toString(), inline: true },
+                            { name: 'Play count:', value: st.plays.toString(), inline: true },
+                            { name: 'Play time:', value: prettyms(st.playtime * 1000, { verbose: true, secondsDecimalDigits: 0, millisecondsDecimalDigits: 0 }), inline: true },
+                            { name: 'Accuracy (%):', value: `${st.acc.toFixed(2)}%`, inline: true },
+                            { name: 'Maximum combo:', value: st.max_combo.toString(), inline: true },
+                            { name: 'SS count:', value: st.x_count.toString(), inline: true },
+                            { name: 'S count:', value: st.s_count.toString(), inline: true },
+                            { name: 'A count:', value: st.a_count.toString(), inline: true } 
+                        ] : [
+                            { name: 'Country rank:', value: st.country_rank.toString(), inline: true },
+                            { name: 'Total score:', value: st.tscore.toString(), inline: true },
+                            { name: 'Ranked score:', value: st.rscore.toString(), inline: true },
+                            { name: 'PP:', value: st.pp.toString(), inline: true },
+                            { name: 'Play count:', value: st.plays.toString(), inline: true },
+                            { name: 'Play time:', value: prettyms(st.playtime * 1000, { verbose: true, secondsDecimalDigits: 0, millisecondsDecimalDigits: 0 }), inline: true },
+                            { name: 'Accuracy (%):', value: `${st.acc.toFixed(2)}%`, inline: true },
+                            { name: 'Maximum combo:', value: st.max_combo.toString(), inline: true },
+                            { name: 'SS (H) count:', value: st.xh_count.toString(), inline: true },
+                            { name: 'SS count:', value: st.x_count.toString(), inline: true },
+                            { name: 'S (H) count:', value: st.sh_count.toString(), inline: true },
+                            { name: 'S count:', value: st.s_count.toString(), inline: true },
+                            { name: 'A count:', value: st.a_count.toString(), inline: true }
+                        ]);
+                    */
                 embedArr.push(embed);
             }
             const buttons = [
