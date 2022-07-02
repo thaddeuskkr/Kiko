@@ -3,6 +3,9 @@ const { MessageEmbed, MessageButton } = require('discord.js');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const prettyms = require('pretty-ms');
 const _ = require('lodash');
+const { exec, spawn }= require('child_process');
+const { URL } = require('url');
+const fs = require('fs');
 
 const baseURL = 'https://api.beatmap.tk';
 
@@ -92,7 +95,33 @@ module.exports = {
                     { name: 'osu!taiko (Relax)', value: '5' },
                     { name: 'osu!catch (Relax)', value: '6' },
                     { name: 'osu! (Autopilot)', value: '8' }
-                ))),
+                )))
+                
+        .addSubcommand(subcommand => subcommand
+            .setName('calculate')
+            .setDescription('Calculate performance points using accuracy and given mods.')
+            .addStringOption(option => option
+                .setName('beatmap')
+                .setDescription('What beatmap would you like to calculate the PP for? (Link)')
+                .setRequired(true))
+            .addStringOption(option => option
+                .setName('args')
+                .setDescription('Arguments to pass to the calculator (e.g. mods, combo, acc)')))
+                
+        .addSubcommand(subcommand => subcommand
+            .setName('calculatemania')
+            .setDescription('Calculate performance points for osu!mania.')
+            .addStringOption(option => option
+                .setName('beatmap')
+                .setDescription('What beatmap would you like to calculate the PP for? (Link)')
+                .setRequired(true))
+            .addStringOption(option => option
+                .setName('score')
+                .setDescription('Score to calculate PP for.')
+                .setRequired(true))
+            .addIntegerOption(option => option
+                .setName('mods')
+                .setDescription('Mods bits (Do not use unless you know what you\'re doing).'))),
     permissions: [],
     checks: [],
     async execute (client, interaction) {
@@ -247,7 +276,7 @@ module.exports = {
                         minute: '2-digit',
                         second: '2-digit'
                     });
-                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
+                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} [${score.beatmap.version}] (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
                     text.push(`\`${score.grade}\` | \`${score.pp}PP\` | **Score:** \`${score.score}\` | **Accuracy:** \`${score.acc.toFixed(2)}%\``);
                     text.push(`**Max combo:** \`${score.max_combo}\` | **Mods (bits):** \`${score.mods}\``);
                     text.push(`**300:** \`${score.n300 + score.ngeki + score.nkatu}\` | **100:** \`${score.n100}\` | **50:** \`${score.n50}\` | **Misses:** \`${score.nmiss}\``);
@@ -316,7 +345,7 @@ module.exports = {
                         minute: '2-digit',
                         second: '2-digit'
                     });
-                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
+                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} [${score.beatmap.version}] (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
                     text.push(`\`${score.grade}\` | \`${score.pp}PP\` | **Score:** \`${score.score}\` | **Accuracy:** \`${score.acc.toFixed(2)}%\``);
                     text.push(`**Max combo:** \`${score.max_combo}\` | **Mods (bits):** \`${score.mods}\``);
                     text.push(`**300:** \`${score.n300 + score.ngeki + score.nkatu}\` | **100:** \`${score.n100}\` | **50:** \`${score.n50}\` | **Misses:** \`${score.nmiss}\``);
@@ -391,11 +420,11 @@ module.exports = {
             let recentPlays = [];
             for (let i = 0; i < 5; i++) {
                 if (!top[i]?.beatmap?.title) continue;
-                topPlays.push(`**[${top[i].beatmap.title} - ${top[i].beatmap.artist} (mapped by ${top[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${top[i].beatmap.set_id})** \`[${top[i].beatmap.diff.toFixed(2)}☆]\`\n\`${top[i].grade} | ${top[i].pp}PP | ${top[i].score}pts | ${top[i].acc.toFixed(2)}%\`\n`);
+                topPlays.push(`**[${top[i].beatmap.title} - ${top[i].beatmap.artist} [${top[i].beatmap.version}] (mapped by ${top[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${top[i].beatmap.set_id})** \`[${top[i].beatmap.diff.toFixed(2)}☆]\`\n\`${top[i].grade} | ${top[i].pp}PP | ${top[i].score}pts | ${top[i].acc.toFixed(2)}%\`\n`);
             }
             for (let i = 0; i < 5; i++) {
                 if (!recent[i]?.beatmap?.title) continue;
-                recentPlays.push(`**[${recent[i].beatmap.title} - ${recent[i].beatmap.artist} (mapped by ${recent[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${recent[i].beatmap.set_id})** \`[${recent[i].beatmap.diff.toFixed(2)}☆]\`\n\`${recent[i].grade} | ${recent[i].pp}PP | ${recent[i].score}pts | ${recent[i].acc.toFixed(2)}%\`\n`);
+                recentPlays.push(`**[${recent[i].beatmap.title} - ${recent[i].beatmap.artist} [${top[i].beatmap.version}] (mapped by ${recent[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${recent[i].beatmap.set_id})** \`[${recent[i].beatmap.diff.toFixed(2)}☆]\`\n\`${recent[i].grade} | ${recent[i].pp}PP | ${recent[i].score}pts | ${recent[i].acc.toFixed(2)}%\`\n`);
             }
             topPlays = top.length > 0 ? topPlays.join('') : 'No top plays.\n';
             recentPlays = recent.length > 0 ? recentPlays.join('') : 'No recent plays.\n';
@@ -417,6 +446,115 @@ module.exports = {
                     recentPlays
                 );
             return interaction.reply({ embeds: [embed] });
+        } else if (subcommand === 'calculatemania') {
+            const url = interaction.options.getString('beatmap');
+            const check = (url) => {
+                const urlArr = url.split('/');
+                const beatmapID = urlArr.at(-1);
+                if (isNaN(beatmapID) || !checkURL(url)) return false;
+                else return beatmapID;
+            };
+            if (check(url) == false) return interaction.reply('Invalid beatmap URL. An example of a valid beatmap URL is <https://osu.ppy.sh/beatmapsets/320118#osu/712376>.');
+            const beatmapID = check(url);
+            let beatmap = await request('/get_map_info', `id=${beatmapID}`);
+            if (!beatmap?.status || beatmap.status !== 'success') return interaction.reply('Invalid beatmap.');
+            beatmap = beatmap.map;
+            await interaction.reply(`Downloading **${beatmap.title} - ${beatmap.artist} [${beatmap.version}] (mapped by ${beatmap.creator})**...`);
+            const file_url = `https://osu.ppy.sh/osu/${beatmap.id}`;
+            const fileName = `${beatmap.id}.osu`;
+            const score = Number(interaction.options.getString('score'));
+            const mods = interaction.options.getInteger('mods') || 0;
+            const DOWNLOAD_DIR = './beatmaps/';
+            // extract the file name
+            let file_name = new URL(file_url);
+            file_name = file_name.pathname.split('/').pop();
+            // create an instance of writable stream
+            var file = fs.createWriteStream(DOWNLOAD_DIR + file_name + '.osu');
+            // execute curl using child_process’ spawn function
+            var curl = spawn('curl', [file_url]);
+            // add a ‘data’ event listener for the spawn instance
+            curl.stdout.on('data', function(data) { file.write(data); });
+            // add an ‘end’ event listener to close the writeable stream
+            curl.stdout.on('end', function() {
+                file.end();
+                client.logger.debug(file_name + ' downloaded to ' + DOWNLOAD_DIR);
+                exec(`python python/calculate.py beatmaps/${fileName} ${score} ${mods}`, (error, stdout, stderr) => {
+                    if (stdout) {
+                        const data = stdout.split(',');
+                        for (let i = 0; i < data.length; i++) {
+                            data[i] = data[i].trim();
+                        }
+                        console.log(data);
+                        const pp = Number(data.find(d => d.includes('pp:')).replace('pp: ', ''));
+                        const stars = Number(data.find(d => d.includes('stars:')).replace('stars: ', '')).toFixed(2);
+                        return interaction.editReply(`**Estimated performance points:** ${pp.toFixed(2)} [\`${stars}☆ | ${score}pts\`]`);
+                    } 
+                    if (error) {
+                        client.logger.error(`Error while calculating PP for ${beatmap.id}: ${error.message}`);
+                        return interaction.editReply(`**Error while calculating PP for ${beatmap.id}:** ${error.message}`);
+                    }
+                    if (stderr) {
+                        client.logger.error(`Error while calculating PP for ${beatmap.id}: ${stderr}`);
+                        return interaction.editReply(`**Error while calculating PP for ${beatmap.id}:** ${stderr}`);
+                    }
+                });
+            });
+            // when the spawn child process exits, check if there were any errors and close the writeable stream
+            curl.on('exit', function(code) {
+                if (code != 0) {
+                    client.logger.error('Failed' + code);
+                }
+            });
+        } else if (subcommand === 'calculate') {
+            const url = interaction.options.getString('beatmap');
+            const args = interaction.options.getString('args');
+            const check = (url) => {
+                const urlArr = url.split('/');
+                const beatmapID = urlArr.at(-1);
+                if (isNaN(beatmapID) || !checkURL(url)) return false;
+                else return beatmapID;
+            };
+            if (check(url) == false) return interaction.reply('Invalid beatmap URL. An example of a valid beatmap URL is <https://osu.ppy.sh/beatmapsets/320118#osu/712376>.');
+            const beatmapID = check(url);
+            let beatmap = await request('/get_map_info', `id=${beatmapID}`);
+            if (!beatmap?.status || beatmap.status !== 'success') return interaction.reply('Invalid beatmap.');
+            beatmap = beatmap.map;
+            await interaction.reply(`Calculating PP for **${beatmap.title} - ${beatmap.artist} [${beatmap.version}] (mapped by ${beatmap.creator})**... \`${args || 'No arguments'}\``);
+            exec(`curl https://osu.ppy.sh/osu/${beatmap.id} | node ./util/pp.js ${args}`, (error, stdout, stderr) => {
+                if (stdout) {
+                    const data = stdout.split('\n');
+                    data.splice(0, 2);
+                    data.pop();
+                    const gamemode = beatmap.mode;
+                    let tgamemode;
+                    if (gamemode == 0) tgamemode = 'osu';
+                    if (gamemode == 1) tgamemode = 'taiko';
+                    if (gamemode == 2) tgamemode = 'fruits';
+                    if (gamemode == 3) tgamemode = 'mania';
+                    if (gamemode == 4) tgamemode = 'osu';
+                    if (gamemode == 5) tgamemode = 'taiko';
+                    if (gamemode == 6) tgamemode = 'fruits';
+                    if (gamemode == 8) tgamemode = 'osu';
+                    const embed = new MessageEmbed()
+                        .setTitle(`${beatmap.title} - ${beatmap.artist} [${beatmap.version}] (mapped by ${beatmap.creator})`)
+                        .setURL(`https://osu.ppy.sh/beatmapsets/${beatmap.set_id}#${tgamemode}/${beatmap.id}`)
+                        .setImage('https://i.imgur.com/OYxjnMX.gif')
+                        .setFooter({ text: 'beatmap.tk | ' + `Requested by ${interaction.user.tag}` })
+                        .setColor('PURPLE')
+                        .setDescription(data.join('\n'));
+                    return interaction.editReply({ content: 'Calculation complete!', embeds: [embed] });
+                }
+                if (error) {
+                    client.logger.error(`Error while calculating PP for ${beatmap.id}: ${error.message}`);
+                    if (error.message.includes('NotImplementedError')) return interaction.editReply('This gamemode is not supported.');
+                    return interaction.editReply(`**Error while calculating PP for ${beatmap.id}:** ${error.message}`);
+                }
+                if (stderr) {
+                    client.logger.error(`Error while calculating PP for ${beatmap.id}: ${stderr}`);
+                    if (stderr.includes('NotImplementedError')) return interaction.editReply('This gamemode is not supported.');
+                    return interaction.editReply(`**Error while calculating PP for ${beatmap.id}:** ${stderr}`);
+                }
+            });
         }
         async function searchUser(interaction, scope) {
             if (!scope) scope = 'all';
@@ -437,6 +575,14 @@ module.exports = {
         async function request(endpoint, args) {
             const response = await fetch(`${baseURL}${endpoint}?${args}`);
             return await response.json();
+        }
+        function checkURL(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (error) {
+                return false;
+            }
         }
     }
 };
