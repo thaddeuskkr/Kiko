@@ -371,31 +371,31 @@ module.exports = {
             status = status.player_status;
             let statusText = '';
             if (status.online == false) statusText = '<:offline:992644133275574373> Offline';
-            else if (status.online == true && status.action == 0) statusText = '<:online:992643863728627792> Idle';
-            else if (status.online == true && status.action == 1) statusText = '<:idle:992643711626395729> AFK';
-            else if (status.online == true && status.action == 2) statusText = `<:dnd:992644105219879003> Playing **${status.status.info_text}**`;
-            else if (status.online == true && status.action == 3) statusText = `<:dnd:992644105219879003> Editing **${status.status_info_text}**`;
-            else if (status.online == true && status.action == 4) statusText = `<:dnd:992644105219879003> Modding **${status.status_info_text}**`;
-            else if (status.online == true && status.action == 5) statusText = '<:online:992643863728627792> Selecting a song in a multiplayer lobby';
-            else if (status.online == true && status.action == 6) statusText = `<:online:992643863728627792> Watching **${status.status_info_text}**`;
+            else if (status.online == true && status.status.action == 0) statusText = '<:online:992643863728627792> Idle';
+            else if (status.online == true && status.status.action == 1) statusText = '<:idle:992643711626395729> AFK';
+            else if (status.online == true && status.status.action == 2) statusText = `<:dnd:992644105219879003> Playing **${status.status.info_text}**`;
+            else if (status.online == true && status.status.action == 3) statusText = `<:dnd:992644105219879003> Editing **${status.status_info_text}**`;
+            else if (status.online == true && status.status.action == 4) statusText = `<:dnd:992644105219879003> Modding **${status.status_info_text}**`;
+            else if (status.online == true && status.status.action == 5) statusText = '<:online:992643863728627792> Selecting a song in a multiplayer lobby';
+            else if (status.online == true && status.status.action == 6) statusText = `<:online:992643863728627792> Watching **${status.status_info_text}**`;
             // 7 isn't used - skip
-            else if (status.online == true && status.action == 8) statusText = `<:online:992643863728627792> Testing **${status.status_info_text}**`;
-            else if (status.online == true && status.action == 9) statusText = `<:online:992643863728627792> Submitting **${status.status_info_text}**`;
+            else if (status.online == true && status.status.action == 8) statusText = `<:online:992643863728627792> Testing **${status.status_info_text}**`;
+            else if (status.online == true && status.status.action == 9) statusText = `<:online:992643863728627792> Submitting **${status.status_info_text}**`;
             // 10: paused | unused - skip
-            else if (status.online == true && status.action == 11) statusText = '<:online:992643863728627792> In a multiplayer lobby';
-            else if (status.online == true && status.action == 12) statusText = `<:dnd:992644105219879003> Playing **${status.status_info_text}** (Multiplayer)`;
-            else if (status.online == true && status.action == 13) statusText = '<:online:992643863728627792> Searching for beatmaps in osu!direct';
-            else if (status.online == true && (status.action > 13 || status.action < 0 || status.action == 7 || status.action == 10)) statusText = '<:dnd:992644105219879003> Unknown status';
+            else if (status.online == true && status.status.action == 11) statusText = '<:online:992643863728627792> In a multiplayer lobby';
+            else if (status.online == true && status.status.action == 12) statusText = `<:dnd:992644105219879003> Playing **${status.status_info_text}** (Multiplayer)`;
+            else if (status.online == true && status.status.action == 13) statusText = '<:online:992643863728627792> Searching for beatmaps in osu!direct';
+            else if (status.online == true && (status.status.action > 13 || status.status.action < 0 || status.status.action == 7 || status.status.action == 10)) statusText = '<:dnd:992644105219879003> Unknown status';
 
             let topPlays = [];
             let recentPlays = [];
             for (let i = 0; i < 5; i++) {
                 if (!top[i]?.beatmap?.title) continue;
-                topPlays.push(`**[${top[i].beatmap.title} - ${top[i].beatmap.artist} (mapped by ${top[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${top[i].beatmap.set_id})**\n\`${top[i].grade} | ${top[i].pp}PP | ${top[i].score}pts | ${top[i].acc.toFixed(2)}%\` | [\`${top[i].beatmap.diff.toFixed(2)}☆\`]\n`);
+                topPlays.push(`**[${top[i].beatmap.title} - ${top[i].beatmap.artist} (mapped by ${top[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${top[i].beatmap.set_id})** \`[${top[i].beatmap.diff.toFixed(2)}☆]\`\n\`${top[i].grade} | ${top[i].pp}PP | ${top[i].score}pts | ${top[i].acc.toFixed(2)}%\`\n`);
             }
             for (let i = 0; i < 5; i++) {
                 if (!recent[i]?.beatmap?.title) continue;
-                recentPlays.push(`**[${recent[i].beatmap.title} - ${recent[i].beatmap.artist} (mapped by ${recent[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${recent[i].beatmap.set_id})**\n\`${recent[i].grade} | ${recent[i].pp}PP | ${recent[i].score}pts | ${recent[i].acc.toFixed(2)}%\` |  [\`${recent[i].beatmap.diff.toFixed(2)}☆\`]\n`);
+                recentPlays.push(`**[${recent[i].beatmap.title} - ${recent[i].beatmap.artist} (mapped by ${recent[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${recent[i].beatmap.set_id})** \`[${recent[i].beatmap.diff.toFixed(2)}☆]\`\n\`${recent[i].grade} | ${recent[i].pp}PP | ${recent[i].score}pts | ${recent[i].acc.toFixed(2)}%\`\n`);
             }
             topPlays = top.length > 0 ? topPlays.join('') : 'No top plays.\n';
             recentPlays = recent.length > 0 ? recentPlays.join('') : 'No recent plays.\n';
