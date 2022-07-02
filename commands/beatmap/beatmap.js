@@ -46,7 +46,53 @@ module.exports = {
                 ))
             .addBooleanOption(option => option
                 .setName('showfailed')
-                .setDescription('Whether to show failed plays.'))),
+                .setDescription('Whether to show failed plays.'))
+            .addIntegerOption(option => option
+                .setName('limit')
+                .setDescription('The number of plays to show. (Defaults to 50)')))
+
+        .addSubcommand(subcommand => subcommand
+            .setName('top')
+            .setDescription('Show top plays for a specified game mode for a user.')
+            .addStringOption(option => option
+                .setName('user')
+                .setDescription('The user name / ID.'))
+            .addStringOption(option => option
+                .setName('gamemode')
+                .setDescription('The game mode to show top plays for.')
+                .addChoices(
+                    { name: 'osu!', value: '0' },
+                    { name: 'osu!taiko', value: '1' },
+                    { name: 'osu!catch', value: '2' },
+                    { name: 'osu!mania', value: '3' },
+                    { name: 'osu! (Relax)', value: '4' },
+                    { name: 'osu!taiko (Relax)', value: '5' },
+                    { name: 'osu!catch (Relax)', value: '6' },
+                    { name: 'osu! (Autopilot)', value: '8' }
+                ))
+            .addIntegerOption(option => option
+                .setName('limit')
+                .setDescription('The number of plays to show. (Defaults to 50)')))
+        
+        .addSubcommand(subcommand => subcommand
+            .setName('profile')
+            .setDescription('Shows the profile for a specified game mode for a user.')
+            .addStringOption(option => option
+                .setName('user')
+                .setDescription('The user name / ID.'))
+            .addStringOption(option => option
+                .setName('gamemode')
+                .setDescription('The game mode to show the profile for.')
+                .addChoices(
+                    { name: 'osu!', value: '0' },
+                    { name: 'osu!taiko', value: '1' },
+                    { name: 'osu!catch', value: '2' },
+                    { name: 'osu!mania', value: '3' },
+                    { name: 'osu! (Relax)', value: '4' },
+                    { name: 'osu!taiko (Relax)', value: '5' },
+                    { name: 'osu!catch (Relax)', value: '6' },
+                    { name: 'osu! (Autopilot)', value: '8' }
+                ))),
     permissions: [],
     checks: [],
     async execute (client, interaction) {
@@ -83,7 +129,7 @@ module.exports = {
                 if (i == 6) stats[i].gamemode = 'osu!catch (Relax)';
                 if (i == 7) stats[i].gamemode = 'osu! (Autopilot)';
                 const st = stats[i];
-                if (st.playtime == 0) continue;
+                if (st.playtime == 0 || st.rank == 0) continue;
 
                 const embed = new MessageEmbed()
                     .setAuthor({ name: `${player.name}`, iconURL: `https://countryflagsapi.com/png/${player.country}` })
@@ -93,7 +139,7 @@ module.exports = {
                     .setColor(client.config.color)
                     .setImage('https://i.imgur.com/OYxjnMX.gif')
                     .setDescription(
-                        `**Country rank:** \`#${st.country_rank}\`\n` + 
+                        `**Rank:** \`#${st.rank}\`\n` + 
                         `**Ranked score:** \`${st.rscore}/${st.tscore}\`\n` +
                         `**Performance:** \`${st.pp}pp\`\n` +
                         `**Plays:** \`${st.plays} (${prettyms(st.playtime * 1000, { secondsDecimalDigits: 0, millisecondsDecimalDigits: 0 })})\`\n` +
@@ -175,8 +221,8 @@ module.exports = {
             if (gamemode == 4) tgamemode = 'osu! (Relax)';
             if (gamemode == 5) tgamemode = 'osu!taiko (Relax)';
             if (gamemode == 6) tgamemode = 'osu!catch (Relax)';
-            if (gamemode == 7) tgamemode = 'osu! (Autopilot)';
-            let recent = await request('/get_player_scores', `id=${u.info.id}&scope=recent&mode=${gamemode}&limit=${interaction.options.getInteger('limit') || '45'}`);
+            if (gamemode == 8) tgamemode = 'osu! (Autopilot)';
+            let recent = await request('/get_player_scores', `id=${u.info.id}&scope=recent&mode=${gamemode}&limit=${interaction.options.getInteger('limit') || '50'}`);
             if (recent.status && recent.status !== 'success') return interaction.reply(`Failed to get recent scores for **${u.info.name} (${u.info.id})**.`);
             if (interaction.options.getBoolean('showfailed') == false) {
                 recent = recent.scores.filter((score) => score.grade !== 'F' );
@@ -229,6 +275,147 @@ module.exports = {
                     .setStyle('PRIMARY')
             ];
             client.util.pagination(interaction, embedArr, buttons);
+        } else if (subcommand === 'top') {
+            const u = await searchUser(interaction);
+            const gamemode = interaction.options.getString('gamemode') || 3;
+            let tgamemode;
+            if (gamemode == 0) tgamemode = 'osu!';
+            if (gamemode == 1) tgamemode = 'osu!taiko';
+            if (gamemode == 2) tgamemode = 'osu!catch';
+            if (gamemode == 3) tgamemode = 'osu!mania';
+            if (gamemode == 4) tgamemode = 'osu! (Relax)';
+            if (gamemode == 5) tgamemode = 'osu!taiko (Relax)';
+            if (gamemode == 6) tgamemode = 'osu!catch (Relax)';
+            if (gamemode == 8) tgamemode = 'osu! (Autopilot)';
+            let top = await request('/get_player_scores', `id=${u.info.id}&scope=best&mode=${gamemode}&limit=${interaction.options.getInteger('limit') || '50'}`);
+            if (top.status && top.status !== 'success') return interaction.reply(`Failed to get top scores for **${u.info.name} (${u.info.id})**.`);
+            top = top.scores;
+            if (top.length < 1) return interaction.reply('No top plays to show.');
+            /* Only applies for recent plays.
+            if (interaction.options.getBoolean('showfailed') == false) {
+                recent = recent.scores.filter((score) => score.grade !== 'F' );
+            } else {
+                recent = recent.scores;
+            }
+            */
+            let chunked = _.chunk(top, 5);
+            let embedArr = [];
+            for (let i = 0; i < chunked.length; i++) {
+                let text = [];
+                for (let e = 0; e < chunked[i].length; e++) {
+                    let score = chunked[i][e];
+                    const date = new Date(score.play_time);
+                    const playTime = date.toLocaleString('en-US', {
+                        hour12: false,
+                        timeZone: 'Asia/Singapore',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
+                    text.push(`\`${score.grade}\` | \`${score.pp}PP\` | **Score:** \`${score.score}\` | **Accuracy:** \`${score.acc.toFixed(2)}%\``);
+                    text.push(`**Max combo:** \`${score.max_combo}\` | **Mods (bits):** \`${score.mods}\``);
+                    text.push(`**300:** \`${score.n300 + score.ngeki + score.nkatu}\` | **100:** \`${score.n100}\` | **50:** \`${score.n50}\` | **Misses:** \`${score.nmiss}\``);
+                    text.push(`**Date:** \`${playTime}\`\n**Time elapsed:** \`${prettyms(score.time_elapsed, { colonNotation: true, millisecondsDecimalDigits: 0, secondsDecimalDigits: 0 })}\` | **ID:** \`${score.id}\``);
+                    text.push('--------------');
+                }
+                
+                const embed = new MessageEmbed()
+                    .setAuthor({ name: `${u.info.name}`, iconURL: `https://countryflagsapi.com/png/${u.info.country}` })
+                    .setThumbnail(`https://a.beatmap.tk/${u.info.id}`)
+                    .setTitle(`Top plays - ${tgamemode}`)
+                    .setURL(`https://beatmap.tk/u/${u.info.id}`)
+                    .setColor(client.config.color)
+                    .setImage('https://i.imgur.com/OYxjnMX.gif')
+                    .setDescription(text.join('\n'));
+                embedArr.push(embed);
+            }
+            const buttons = [
+                new MessageButton()
+                    .setCustomId('prev')
+                    .setLabel('Previous')
+                    .setStyle('PRIMARY'), 
+                new MessageButton()
+                    .setCustomId('next')
+                    .setLabel('Next')
+                    .setStyle('PRIMARY')
+            ];
+            client.util.pagination(interaction, embedArr, buttons);
+        } else if (subcommand === 'profile') {
+            const u = await searchUser(interaction);
+            const gamemode = interaction.options.getString('gamemode') || 3;
+            let tgamemode;
+            if (gamemode == 0) tgamemode = 'osu!';
+            if (gamemode == 1) tgamemode = 'osu!taiko';
+            if (gamemode == 2) tgamemode = 'osu!catch';
+            if (gamemode == 3) tgamemode = 'osu!mania';
+            if (gamemode == 4) tgamemode = 'osu! (Relax)';
+            if (gamemode == 5) tgamemode = 'osu!taiko (Relax)';
+            if (gamemode == 6) tgamemode = 'osu!catch (Relax)';
+            if (gamemode == 8) tgamemode = 'osu! (Autopilot)';
+            let pInfo = await request('/get_player_info', `id=${u.info.id}&scope=stats`);
+            if (pInfo.status && pInfo.status !== 'success') return interaction.reply(`Failed to get profile for **${u.info.name} (${u.info.id})**. (stats)`);
+            pInfo = pInfo.player.stats[gamemode];
+            let top = await request('/get_player_scores', `id=${u.info.id}&scope=best&mode=${gamemode}&limit=5`);
+            if (top.status && top.status !== 'success') return interaction.reply(`Failed to get profile for **${u.info.name} (${u.info.id})**. (scores)`);
+            top = top.scores;
+            let recent = await request('/get_player_scores', `id=${u.info.id}&scope=recent&mode=${gamemode}&limit=5`);
+            if (recent.status && recent.status !== 'success') return interaction.reply(`Failed to get profile for **${u.info.name} (${u.info.id})**. (scores)`);
+            recent = recent.scores;
+            let status = await request('/get_player_status', `id=${u.info.id}`);
+            if (status.status && status.status !== 'success') return interaction.reply(`Failed to get profile for **${u.info.name} (${u.info.id})**. (status)`);
+            status = status.player_status;
+            let statusText = '';
+            if (status.online == false) statusText = '<:offline:992644133275574373> Offline';
+            else if (status.online == true && status.action == 0) statusText = '<:online:992643863728627792> Idle';
+            else if (status.online == true && status.action == 1) statusText = '<:idle:992643711626395729> AFK';
+            else if (status.online == true && status.action == 2) statusText = `<:dnd:992644105219879003> Playing **${status.status.info_text}**`;
+            else if (status.online == true && status.action == 3) statusText = `<:dnd:992644105219879003> Editing **${status.status_info_text}**`;
+            else if (status.online == true && status.action == 4) statusText = `<:dnd:992644105219879003> Modding **${status.status_info_text}**`;
+            else if (status.online == true && status.action == 5) statusText = '<:online:992643863728627792> Selecting a song in a multiplayer lobby';
+            else if (status.online == true && status.action == 6) statusText = `<:online:992643863728627792> Watching **${status.status_info_text}**`;
+            // 7 isn't used - skip
+            else if (status.online == true && status.action == 8) statusText = `<:online:992643863728627792> Testing **${status.status_info_text}**`;
+            else if (status.online == true && status.action == 9) statusText = `<:online:992643863728627792> Submitting **${status.status_info_text}**`;
+            // 10: paused | unused - skip
+            else if (status.online == true && status.action == 11) statusText = '<:online:992643863728627792> In a multiplayer lobby';
+            else if (status.online == true && status.action == 12) statusText = `<:dnd:992644105219879003> Playing **${status.status_info_text}** (Multiplayer)`;
+            else if (status.online == true && status.action == 13) statusText = '<:online:992643863728627792> Searching for beatmaps in osu!direct';
+            else if (status.online == true && (status.action > 13 || status.action < 0 || status.action == 7 || status.action == 10)) statusText = '<:dnd:992644105219879003> Unknown status';
+
+            let topPlays = [];
+            let recentPlays = [];
+            for (let i = 0; i < 5; i++) {
+                if (!top[i]?.beatmap?.title) continue;
+                topPlays.push(`**[${top[i].beatmap.title} - ${top[i].beatmap.artist} (mapped by ${top[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${top[i].beatmap.set_id})**\n\`${top[i].grade} | ${top[i].pp}PP | ${top[i].score}pts | ${top[i].acc.toFixed(2)}%\` | [\`${top[i].beatmap.diff.toFixed(2)}☆\`]\n`);
+            }
+            for (let i = 0; i < 5; i++) {
+                if (!recent[i]?.beatmap?.title) continue;
+                recentPlays.push(`**[${recent[i].beatmap.title} - ${recent[i].beatmap.artist} (mapped by ${recent[i].beatmap.creator})](https://osu.ppy.sh/beatmapsets/${recent[i].beatmap.set_id})**\n\`${recent[i].grade} | ${recent[i].pp}PP | ${recent[i].score}pts | ${recent[i].acc.toFixed(2)}%\` |  [\`${recent[i].beatmap.diff.toFixed(2)}☆\`]\n`);
+            }
+            topPlays = top.length > 0 ? topPlays.join('') : 'No top plays.\n';
+            recentPlays = recent.length > 0 ? recentPlays.join('') : 'No recent plays.\n';
+                
+            let embed = new MessageEmbed()
+                .setAuthor({ name: `${u.info.name}`, iconURL: `https://countryflagsapi.com/png/${u.info.country}` })
+                .setThumbnail(`https://a.beatmap.tk/${u.info.id}`)
+                .setTitle(`Profile - ${tgamemode}`)
+                .setURL(`https://beatmap.tk/u/${u.info.id}`)
+                .setColor(client.config.color)
+                .setImage('https://i.imgur.com/OYxjnMX.gif')
+                .setFooter({ text: 'beatmap.tk | ' + `Requested by ${interaction.user.tag}` })
+                .setDescription(
+                    `${statusText}\n` +
+                    `\`#${pInfo.rank} (${pInfo.pp}PP\`) | \`${pInfo.acc.toFixed(2)}%\` | \`${pInfo.plays} plays (${prettyms(pInfo.playtime * 1000, { colonNotation: true, millisecondsDecimalDigits: 0, secondsDecimalDigits: 0 })})\`\n` +
+                    '\n**__Top plays:__**\n' +
+                    topPlays + 
+                    '\n**__Recent plays:__**\n' + 
+                    recentPlays
+                );
+            return interaction.reply({ embeds: [embed] });
         }
         async function searchUser(interaction, scope) {
             if (!scope) scope = 'all';
