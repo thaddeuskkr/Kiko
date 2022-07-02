@@ -97,6 +97,7 @@ module.exports = {
     checks: [],
     async execute (client, interaction) {
         const subcommand = interaction.options.getSubcommand();
+        if (interaction.guildId !== '992062136866066503') return interaction.reply('This set of commands can only be used in the `beatmap.tk` Discord server.');
         if (subcommand === 'userinfo') {
             const u = await searchUser(interaction, 'all');
             const player = u.info;
