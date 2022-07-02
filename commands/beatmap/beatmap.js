@@ -6,6 +6,7 @@ const _ = require('lodash');
 const { exec, spawn }= require('child_process');
 const { URL } = require('url');
 const fs = require('fs');
+const AsciiTable = require('ascii-table');
 
 const baseURL = 'https://api.beatmap.tk';
 
@@ -106,7 +107,7 @@ module.exports = {
                 .setRequired(true))
             .addStringOption(option => option
                 .setName('args')
-                .setDescription('Arguments to pass to the calculator (e.g. mods, combo, acc)')))
+                .setDescription('Arguments to pass to the calculator (e.g. mods - e.g. +HRDT, combo - e.g. 100x, acc - e.g. 100%)')))
                 
         .addSubcommand(subcommand => subcommand
             .setName('calculatemania')
@@ -525,6 +526,77 @@ module.exports = {
                     const data = stdout.split('\n');
                     data.splice(0, 2);
                     data.pop();
+                    let mods = false;
+                    if (data.length > 8) mods = true; // only if + mods will be 1 longer
+                    const x = {
+                        line1: {},
+                        line2: {},
+                        line3: {},
+                        line4: {},
+                        line5: {},
+                        line6: {},
+                        line7: {},
+                        mods: ''
+                    };
+
+                    x.line1.ar = Number(data[0].split(' ')[0].replace('AR', ''));
+                    x.line1.od = Number(data[0].split(' ')[1].replace('OD', ''));
+                    x.line1.cs = Number(data[0].split(' ')[2].replace('CS', ''));
+                    x.line1.hp = Number(data[0].split(' ')[3].replace('HP', ''));
+
+                    x.line2.circles = Number(data[1].split(' ')[0]);
+                    x.line2.sliders = Number(data[1].split(' ')[2]);
+                    x.line2.spinners = Number(data[1].split(' ')[4]);
+                    
+                    x.line3.maxCombo = Number(data[2].split(' ')[0]);
+
+                    if (mods == true) {
+                        x.mods = data.splice(4, 1);
+                    }
+                    x.line4.stars = Number(data[4].split(' ')[0]);
+                    x.line4.aimStars = Number(data[4].replace(`${x.line4.stars} stars (`, '').replace(')', '').split(', ')[0].replace(' aim', ''));
+                    x.line4.speedStars = Number(data[4].replace(`${x.line4.stars} stars (`, '').replace(')', '').split(', ')[1].replace(' speed', ''));
+
+                    x.line5.accuracy = Number(data[5].split(' ')[0].replace('%', ''));
+                    x.line5.x100 = Number(data[5].split(' ')[1].replace('x100', ''));
+                    x.line5.x50 = Number(data[5].split(' ')[2].replace('x50', ''));
+                    x.line5.xMiss = Number(data[5].split(' ')[3].replace('xmiss', ''));
+
+                    x.line6.combo = Number(data[6].split('/')[0]);
+                    x.line6.maxCombo = Number(data[6].split('/')[1].replace('x', ''));
+
+                    x.line7.pp = Number(data[7].split(' ')[0]);
+                    x.line7.aimPP = Number(data[7].replace(`${x.line7.pp} pp (`, '').replace(')', '').split(', ')[0].replace(' aim', ''));
+                    x.line7.speedPP = Number(data[7].replace(`${x.line7.pp} pp (`, '').replace(')', '').split(', ')[1].replace(' speed', ''));
+                    x.line7.accPP = Number(data[7].replace(`${x.line7.pp} pp (`, '').replace(')', '').split(', ')[2].replace(' acc', ''));
+
+                    const table1 = new AsciiTable('Map information');
+                    table1
+                        .setHeading('AR', 'OD', 'CS', 'HP', 'Max Combo')
+                        .addRow(x.line1.ar, x.line1.od, x.line1.cs, x.line1.hp, x.line3.maxCombo);
+
+                    const table2 = new AsciiTable('Circle types');
+                    table2
+                        .setHeading('Circles', 'Sliders', 'Spinners')
+                        .addRow(x.line2.circles, x.line2.sliders, x.line2.spinners);
+                    
+                    const table3 = new AsciiTable('Difficulty calculation');
+                    table3
+                        .setHeading('Total stars', 'Aim', 'Speed')
+                        .addRow(x.line4.stars, x.line4.aimStars, x.line4.speedStars);
+                    
+                    const table4 = new AsciiTable('Simulated');
+                    table4
+                        .setHeading('Accuracy', '100', '50', 'Misses', 'Combo')
+                        .addRow(`${x.line5.accuracy}%`, x.line5.x100, x.line5.x50, x.line5.xMiss, x.line6.combo);
+                    
+                    const table5 = new AsciiTable('Performance');
+                    table5
+                        .setHeading('Total PP', 'Aim', 'Speed', 'Accuracy')
+                        .addRow(x.line7.pp, x.line7.aimPP, x.line7.speedPP, x.line7.accPP);
+
+                    const m = `\`\`\`\n${table1}\n${table2}\n${table3}\n${table4}\n${table5}\`\`\``;
+
                     const gamemode = beatmap.mode;
                     let tgamemode;
                     if (gamemode == 0) tgamemode = 'osu';
@@ -535,14 +607,7 @@ module.exports = {
                     if (gamemode == 5) tgamemode = 'taiko';
                     if (gamemode == 6) tgamemode = 'fruits';
                     if (gamemode == 8) tgamemode = 'osu';
-                    const embed = new MessageEmbed()
-                        .setTitle(`${beatmap.title} - ${beatmap.artist} [${beatmap.version}] (mapped by ${beatmap.creator})`)
-                        .setURL(`https://osu.ppy.sh/beatmapsets/${beatmap.set_id}#${tgamemode}/${beatmap.id}`)
-                        .setImage('https://i.imgur.com/OYxjnMX.gif')
-                        .setFooter({ text: 'beatmap.tk | ' + `Requested by ${interaction.user.tag}` })
-                        .setColor('PURPLE')
-                        .setDescription(data.join('\n'));
-                    return interaction.editReply({ content: 'Calculation complete!', embeds: [embed] });
+                    return interaction.editReply({ content: `**${beatmap.title} - ${beatmap.artist} [${beatmap.version}] (mapped by ${beatmap.creator})** • <https://osu.ppy.sh/beatmapsets/${beatmap.set_id}#${tgamemode}/${beatmap.id}> • \`${x.mods || 'No mods'}\`\n${m}` });
                 }
                 if (error) {
                     client.logger.error(`Error while calculating PP for ${beatmap.id}: ${error.message}`);
