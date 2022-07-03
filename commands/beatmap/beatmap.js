@@ -122,7 +122,17 @@ module.exports = {
                 .setRequired(true))
             .addIntegerOption(option => option
                 .setName('mods')
-                .setDescription('Mods bits (Do not use unless you know what you\'re doing).'))),
+                .setDescription('Mods bits (Do not use unless you know what you\'re doing).')))
+                
+        .addSubcommand(subcommand => subcommand
+            .setName('compare')
+            .setDescription('Compare to the recent score returned by the bot or the score ID you provide')
+            .addIntegerOption(option => option
+                .setName('id')
+                .setDescription('The ID of the score, if you want to provide one.'))
+            .addStringOption(option => option
+                .setName('user')
+                .setDescription('The user ID or username of the user to compare to (defaults to yourself)'))),
     permissions: [],
     checks: [],
     async execute (client, interaction) {
@@ -260,6 +270,7 @@ module.exports = {
             } else {
                 recent = recent.scores;
             }
+            if (interaction.options.getInteger('limit') == 1) interaction.channel.recentScore = recent[0];
             let chunked = _.chunk(recent, 5);
             let embedArr = [];
             for (let i = 0; i < chunked.length; i++) {
@@ -322,6 +333,7 @@ module.exports = {
             if (top.status && top.status !== 'success') return interaction.reply(`Failed to get top scores for **${u.info.name} (${u.info.id})**.`);
             top = top.scores;
             if (top.length < 1) return interaction.reply('No top plays to show.');
+            if (interaction.options.getInteger('limit') == 1) interaction.channel.recentScore = top[0];
             /* Only applies for recent plays.
             if (interaction.options.getBoolean('showfailed') == false) {
                 recent = recent.scores.filter((score) => score.grade !== 'F' );
@@ -624,6 +636,76 @@ module.exports = {
                     return interaction.editReply(`**Error while calculating PP for ${beatmap.id}:** ${stderr}`);
                 }
             });
+        } else if (subcommand === 'compare') {
+            let compareId = interaction.options.getInteger('id');
+            let compareId2 = interaction.options.getInteger('id2');
+            let compare;
+            let compare2;
+            const u = await searchUser(interaction);
+            if (!compareId) compare = interaction.channel.recentScore;
+            if (compareId && compareId > 0) {
+                let score = await request('/get_score_info', `id=${compareId}`);
+                if (!score.status || score.status !== 'success') return interaction.reply('Could not find the score for the ID you provided (1).');
+                else compare = score.score;
+            }
+            if (!compare) return interaction.reply('You must provide a score ID to compare with, or run a command that returns ONE score (set limit to 1).');
+            if (compareId2 && compareId2 > 0) {
+                let score = await request('/get_score_info', `id=${compareId2}`);
+                if (!score.status || score.status !== 'success') return interaction.reply('Could not find the score for the ID you provided (2).');
+                else compare2 = score.score;
+            }
+            if (!compare2) {
+                let scores = await request('/get_player_scores', `id=${u.info.id}&scope=recent&limit=100`);
+                if (!scores.status || scores.status !== 'success') return interaction.reply('Could not find any scores for the user you provided.');
+                scores = scores.scores;
+                scores = scores.sort((a, b) => b.pp - a.pp);
+                const score = scores.find(s => s.beatmap_id === compare.beatmap_id);
+                if (!score) return interaction.reply('You did not play this map.');
+                compare2 = score;
+            }
+            await interaction.reply(`Comparing score **${compareId}** with score **${compare2.id}**...`);
+            const date = new Date(compare.play_time);
+            const playTime1 = date.toLocaleString('en-US', {
+                hour12: false,
+                timeZone: 'Asia/Singapore',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const date2 = new Date(compare2.play_time);
+            const playTime2 = date2.toLocaleString('en-US', {
+                hour12: false,
+                timeZone: 'Asia/Singapore',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            if (!compareId) compareId = compare.id;
+            const table = new AsciiTable('Score comparison');
+            table
+                .setHeading(compareId, 'Comparison', compare2.id)
+                .addRow(compare.grade, 'Grade', compare2.grade)
+                .addRow(compare.pp + 'pp', 'PP', compare2.pp + 'pp')
+                .addRow(compare.score, 'Score', compare2.score)
+                .addRow(compare.acc + '%', 'Accuracy', compare2.acc + '%')
+                .addRow(compare.max_combo, 'Max combo', compare2.max_combo)
+                .addRow(compare.mods, 'Mods - bits', compare2.mods)
+                .addRow(compare.n300 + 'x', '300', compare2.n300 + 'x')
+                .addRow(compare.n100 + 'x', '100', compare2.n100 + 'x')
+                .addRow(compare.n50 + 'x', '50', compare2.n50 + 'x')
+                .addRow(compare.nmiss + 'x', 'Misses', compare2.nmiss + 'x')
+                .addRow(playTime1, 'Date played', playTime2)
+                .addRow(prettyms(compare.time_elapsed, { colonNotation: true, millisecondsDecimalDigits: 0, secondsDecimalDigits: 0 }), 'Time elapsed', prettyms(compare2.time_elapsed, { colonNotation: true, millisecondsDecimalDigits: 0, secondsDecimalDigits: 0 }))
+                .setAlign(0, AsciiTable.RIGHT)
+                .setAlign(1, AsciiTable.CENTER)
+                .setAlign(2, AsciiTable.LEFT);
+            return interaction.editReply(`\`\`\`\n${table}\`\`\``);
         }
         async function searchUser(interaction, scope) {
             if (!scope) scope = 'all';
