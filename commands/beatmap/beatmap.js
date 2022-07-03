@@ -448,6 +448,10 @@ module.exports = {
                 );
             return interaction.reply({ embeds: [embed] });
         } else if (subcommand === 'calculatemania') {
+            const arch = process.arch;
+            if (arch.includes('arm')) {
+                return interaction.reply('The system that the bot is running on does not support the Peace performance calculator. Calculations for osu!mania are therefore not supported.');
+            }
             const url = interaction.options.getString('beatmap');
             const check = (url) => {
                 const urlArr = url.split('/');
