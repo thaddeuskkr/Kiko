@@ -288,7 +288,16 @@ module.exports = {
                         minute: '2-digit',
                         second: '2-digit'
                     });
-                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} [${score.beatmap.version}] (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
+                    let tgamemode1;
+                    if (gamemode == 0) tgamemode1 = 'osu';
+                    if (gamemode == 1) tgamemode1 = 'taiko';
+                    if (gamemode == 2) tgamemode1 = 'fruits';
+                    if (gamemode == 3) tgamemode1 = 'mania';
+                    if (gamemode == 4) tgamemode1 = 'osu';
+                    if (gamemode == 5) tgamemode1 = 'taiko';
+                    if (gamemode == 6) tgamemode1 = 'fruits';
+                    if (gamemode == 8) tgamemode1 = 'osu';
+                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} [${score.beatmap.version}] (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id}#${tgamemode1}/${score.beatmap.id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
                     text.push(`\`${score.grade}\` | \`${score.pp}PP\` | **Score:** \`${score.score}\` | **Accuracy:** \`${score.acc.toFixed(2)}%\``);
                     text.push(`**Max combo:** \`${score.max_combo}\` | **Mods (bits):** \`${score.mods}\``);
                     text.push(`**300:** \`${score.n300 + score.ngeki + score.nkatu}\` | **100:** \`${score.n100}\` | **50:** \`${score.n50}\` | **Misses:** \`${score.nmiss}\``);
@@ -358,7 +367,16 @@ module.exports = {
                         minute: '2-digit',
                         second: '2-digit'
                     });
-                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} [${score.beatmap.version}] (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
+                    let tgamemode1;
+                    if (gamemode == 0) tgamemode1 = 'osu';
+                    if (gamemode == 1) tgamemode1 = 'taiko';
+                    if (gamemode == 2) tgamemode1 = 'fruits';
+                    if (gamemode == 3) tgamemode1 = 'mania';
+                    if (gamemode == 4) tgamemode1 = 'osu';
+                    if (gamemode == 5) tgamemode1 = 'taiko';
+                    if (gamemode == 6) tgamemode1 = 'fruits';
+                    if (gamemode == 8) tgamemode1 = 'osu';
+                    text.push(`**[${score.beatmap.title} - ${score.beatmap.artist} [${score.beatmap.version}] (mapped by ${score.beatmap.creator})](https://osu.ppy.sh/beatmapsets/${score.beatmap.set_id}#${tgamemode1}/${score.beatmap.id})** [\`${score.beatmap.diff.toFixed(2)}☆\`]`);
                     text.push(`\`${score.grade}\` | \`${score.pp}PP\` | **Score:** \`${score.score}\` | **Accuracy:** \`${score.acc.toFixed(2)}%\``);
                     text.push(`**Max combo:** \`${score.max_combo}\` | **Mods (bits):** \`${score.mods}\``);
                     text.push(`**300:** \`${score.n300 + score.ngeki + score.nkatu}\` | **100:** \`${score.n100}\` | **50:** \`${score.n50}\` | **Misses:** \`${score.nmiss}\``);
