@@ -588,8 +588,8 @@ module.exports = {
                         x.mods = data.splice(4, 1);
                     }
                     x.line4.stars = Number(data[4].split(' ')[0]);
-                    x.line4.aimStars = Number(data[4].replace(`${x.line4.stars} stars (`, '').replace(')', '').split(', ')[0].replace(' aim', ''));
-                    x.line4.speedStars = Number(data[4].replace(`${x.line4.stars} stars (`, '').replace(')', '').split(', ')[1].replace(' speed', ''));
+                    x.line4.aimStars = Number(data[4].replace(`${data[4].split(' ')[0]} stars (`, '').replace(')', '').split(', ')[0].replace(' aim', ''));
+                    x.line4.speedStars = Number(data[4].replace(`${data[4].split(' ')[0]} stars (`, '').replace(')', '').split(', ')[1].replace(' speed', ''));
 
                     x.line5.accuracy = Number(data[5].split(' ')[0].replace('%', ''));
                     x.line5.x100 = Number(data[5].split(' ')[1].replace('x100', ''));
