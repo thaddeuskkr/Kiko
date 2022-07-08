@@ -8,9 +8,9 @@ module.exports = {
             .setRequired(true)
             .setDescription('The new repeat mode of the player.')
             .addChoices(
-                { name: 'Currently playing track', value: 'one' },
-                { name: 'Whole queue', value: 'all' },
-                { name: 'Disabled', value: 'off' }
+                { name: 'one (Currently playing track)', value: 'one' },
+                { name: 'all (Whole queue)', value: 'all' },
+                { name: 'off (Disabled)', value: 'off' },
             )),
     permissions: [],
     checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
