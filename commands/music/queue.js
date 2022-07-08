@@ -16,9 +16,12 @@ module.exports = {
         let finalEmbeds = [];
         const bar = dispatcher.current.info.isStream ? '' : client.util.createProgressBar(current, dispatcher.current.info.length, 20);
         if (!dispatcher.queue?.length) {
+            let loopString = '';
+            if (dispatcher.repeat === 'one') loopString = '\n*Looping the currently playing track*';
+            else if (dispatcher.repeat === 'all') loopString = '\n*Looping the whole queue*';
             finalEmbeds.push(new MessageEmbed()
                 .setAuthor({ name: `Queue for ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ size: 4096 }) })
-                .setDescription(`**__Now playing:__**\n**${dispatcher.current.info.title}** - **${dispatcher.current.info.author}** [${currentDuration}] (${Util.escapeMarkdown(dispatcher.current.info.requester.tag)})\n${client.util.formatTime(current)} ${bar} ${currentDuration}\n\n**No tracks in queue.**`)
+                .setDescription(`**__Now playing:__**\n**${dispatcher.current.info.title}** - **${dispatcher.current.info.author}** [${currentDuration}] (${Util.escapeMarkdown(dispatcher.current.info.requester.tag)})\n${client.util.formatTime(current)} ${bar} ${currentDuration}\n\n**No tracks in queue.**${loopString}`)
                 .setColor(client.config.color));
         } else {
             let chunked = _.chunk(dispatcher.queue, tracksPerPage);
@@ -28,6 +31,9 @@ module.exports = {
             }
             let totalDuration = client.util.formatTime(totalDurationMs);
             if (dispatcher.queue.find(x => x.info.isStream === true)) totalDuration = '∞';
+            let loopString = '';
+            if (dispatcher.repeat === 'one') loopString = ' • **Looping the currently playing track**';
+            else if (dispatcher.repeat === 'all') loopString = ' • **Looping the whole queue**';
             for (let i = 0; i < chunked.length; i++) {
                 let msgArr = [];
                 msgArr.push(`**__Now playing:__**\n**${dispatcher.current.info.title}** - **${dispatcher.current.info.author}** [${currentDuration}] (${Util.escapeMarkdown(dispatcher.current.info.requester.tag)})`);
@@ -37,7 +43,7 @@ module.exports = {
                     let trackDuration = client.util.formatTime(track.info.length, track.info.isStream);
                     msgArr.push(`**\`${e + 10 * i + 1}\`**: **${Util.escapeMarkdown(track.info.title)}** [${trackDuration}] (${Util.escapeMarkdown(track.info.requester.tag)})`);
                 }
-                msgArr.push(`\n**${dispatcher.queue.length}** tracks in queue.\n**Total duration:** \`${totalDuration}\``);
+                msgArr.push(`\n**${dispatcher.queue.length}** tracks in queue.\n**Total duration:** \`${totalDuration}\`${loopString}`);
                 let text = msgArr.join('\n');
                 embeds.push(text);
             }
