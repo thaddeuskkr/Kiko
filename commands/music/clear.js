@@ -10,7 +10,7 @@ module.exports = {
         const queueLength = dispatcher.queue.length;
         dispatcher.queue.length = 0;
         const embed = new MessageEmbed()
-            .setDescription(`Cleared the queue of ${queueLength} tracks.`)
+            .setDescription(`Cleared the queue of **${queueLength}** tracks.`)
             .setColor(client.config.color);
         interaction.reply({ embeds: [embed] });
     }
