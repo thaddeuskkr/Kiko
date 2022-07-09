@@ -9,13 +9,13 @@ module.exports = {
     checks: ['PLAYING', 'IN_VC', 'SAME_VC'],
     async execute (client, interaction, lava, dispatcher) {
         const oldVolume = dispatcher.player.filters.volume * 100;
+        const newVolume = interaction.options.getInteger('volume');
         if (!newVolume) {
             const emb = new MessageEmbed()
                 .setColor(client.config.color)
                 .setDescription(`The current volume is **${oldVolume}%**.`);
             return interaction.reply({ embeds: [emb] });
         }
-        const newVolume = interaction.options.getInteger('volume');
         if (!inRange(newVolume, 0, 200)) return interaction.reply('Volume must be between 0 and 200.');
         dispatcher.player.setVolume(newVolume / 100);
         const embed = new MessageEmbed()
