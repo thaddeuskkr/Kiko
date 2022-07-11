@@ -43,7 +43,7 @@ class Dispatcher {
             .on('end', async () => {
                 if (this.repeat === 'one') this.queue.unshift(this.current);
                 if (this.repeat === 'all') this.queue.push(this.current);
-                if (this.player.nowPlayingMessage) {
+                if (this.player.nowPlayingMessage && (this.repeat !== 'one' && _notifiedOnce !== true)) {
                     await this.player.nowPlayingMessage.delete().catch(() => null);
                     this.player.nowPlayingMessage = undefined;
                 }
