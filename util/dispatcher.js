@@ -30,6 +30,8 @@ class Dispatcher {
                 else if (this.repeat === 'all' || this.repeat === 'off') {
                     _notifiedOnce = false;
                 }
+                // let nextTrack = '';
+                // if (this.queue.length && this.repeat !== 'one') nextTrack = `\n**Next in queue:** ${this.queue[0].info.title} - ${this.queue[0].info.author}`;
                 const embed = new MessageEmbed()
                     .setColor(this.client.config.color)
                     .setAuthor({ name: 'Now playing', iconURL: client.user.avatarURL({ size: 4096 }), url: this.current.info.uri })
