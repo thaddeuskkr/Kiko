@@ -1,5 +1,5 @@
-# Ethereal
-Ethereal Discord Bot - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.
+# Kiko
+Kiko (previously Ethereal) - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.
 
 ### Features
 - Reliable music system
