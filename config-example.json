@@ -1,12 +1,11 @@
 {
     "owners": ["your-owner-id"],
-    "prefix": "(Unused)",
-    "color": "hex-or-colorcode",
+    "color": "#c89cfc",
     "llnodes": [
         {
             "name": "Main",
-            "url": "lavalink-url",
-            "auth": "password-for-lavalink"
+            "url": "138.2.93.28:2333",
+            "auth": "faithful"
         }
     ],
     "defaultVolume": 40,
