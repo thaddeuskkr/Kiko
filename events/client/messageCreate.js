@@ -9,7 +9,7 @@ const nlPattern = new RegExp(nl, 'g');
 module.exports = async (client, message) => {
     if (!client.config.owners.includes(message.author.id)) return;
 
-    if (message.content === 'ethereal deploy guild' || message.content === 'ethereal deploy' || message.content === 'ethereal deploy global' || message.content === 'ethereal undeploy global' || message.content === 'ethereal undeploy' || message.content === 'ethereal undeploy guild') {
+    if (message.content === 'kiko deploy guild' || message.content === 'kiko deploy' || message.content === 'kiko deploy global' || message.content === 'kiko undeploy global' || message.content === 'kiko undeploy' || message.content === 'kiko undeploy guild') {
         const commands = [];
 
         for (const command of client.commands) {
@@ -18,17 +18,17 @@ module.exports = async (client, message) => {
     
         const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
-        if (message.content === 'ethereal deploy guild') {
+        if (message.content === 'kiko deploy guild') {
             rest.put(Routes.applicationGuildCommands(client.user.id, message.guild.id), { body: commands })
                 .then(() => client.logger.info(`Successfully registered application commands for server ${message.guild.name} (${message.guild.id})!`))
                 .catch(err => client.logger.error('Failed to register application commands: ' + err.message));
             return message.reply('Success!');
-        } else if (message.content === 'ethereal deploy' || message.content === 'ethereal deploy global') {
+        } else if (message.content === 'kiko deploy' || message.content === 'kiko deploy global') {
             rest.put(Routes.applicationCommands(client.user.id), { body: commands })
                 .then(() => client.logger.info('Successfully registered application commands globally!'))
                 .catch(err => client.logger.error('Failed to register application commands: ' + err.message));
             return message.reply('Success!');
-        } else if (message.content === 'ethereal undeploy guild') {
+        } else if (message.content === 'kiko undeploy guild') {
             rest.get(Routes.applicationGuildCommands(client.user.id, message.guild.id))
                 .then(data => {
                     const promises = [];
@@ -39,7 +39,7 @@ module.exports = async (client, message) => {
                     return Promise.all(promises).then(() => client.logger.info(`Successfully unregistered application commands for server ${message.guild.name} (${message.guild.id})!`));
                 });
             return message.reply('Success!');
-        } else if (message.content === 'ethereal undeploy' || message.content === 'ethereal undeploy global') {
+        } else if (message.content === 'kiko undeploy' || message.content === 'kiko undeploy global') {
             rest.get(Routes.applicationCommands(client.user.id))
                 .then(data => {
                     const promises = [];

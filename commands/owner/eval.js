@@ -33,7 +33,7 @@ module.exports = {
             .setAuthor({ name: 'Success' })
             .setColor(client.config.color)
             .setDescription(`*Executed in ${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.*`)
-            .setFooter({ text: `ethereal.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });
+            .setFooter({ text: `kiko.tkkr.tk | Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL({ size: 4096 }) });
         await interaction.reply({ embeds: [embed] });
         if (Array.isArray(result)) {
             return result.map(item => interaction.channel.send({ content: item }));

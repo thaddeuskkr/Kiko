@@ -1,5 +1,5 @@
 /*
-    Ethereal / A fully functional Discord bot with many features.
+    Kiko / A fully functional Discord bot with many features.
     Copyright (C) 2022 Thaddeus Kuah
 */
 const chalk = require('chalk'); // Using chalk v4 as we won't be using ESM anytime soon.

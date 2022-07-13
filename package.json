@@ -1,14 +1,14 @@
 {
-  "name": "ethereal",
+  "name": "kiko",
   "version": "2.2.0",
-  "description": "Ethereal Discord Bot - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.",
+  "description": "Kiko - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thaddeuskkr/Ethereal.git"
+    "url": "git+https://github.com/thaddeuskkr/Kiko.git"
   },
   "keywords": [
     "discord.js",
@@ -20,9 +20,9 @@
   "author": "Thaddeus Kuah <thaddeuskkr@gmail.com> (https://tkkr.tk)",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/thaddeuskkr/Ethereal/issues"
+    "url": "https://github.com/thaddeuskkr/Kiko/issues"
   },
-  "homepage": "https://github.com/thaddeuskkr/Ethereal#readme",
+  "homepage": "https://github.com/thaddeuskkr/Kiko#readme",
   "dependencies": {
     "@discordjs/builders": "^0.15.0",
     "@discordjs/rest": "^0.5.0",

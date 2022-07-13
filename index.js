@@ -1,5 +1,5 @@
 /*
-    Ethereal / A fully functional Discord bot with many features.
+    Kiko / A fully functional Discord bot with many features.
     Copyright (C) 2022 Thaddeus Kuah
 
     This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), config.llnodes, 
     reconnectTries: 3,
     moveOnDisconnect: false,
     // resume: true,
-    // resumeKey: 'etherealbot',
+    // resumeKey: 'kikobot',
     // resumeTimeout: 60,
     resumeByLibrary: true,
     // alwaysSendResumeKey: true
@@ -94,4 +94,4 @@ process.on('unhandledRejection', async (reason, promise) => {
 });
 
 // Keyv handling
-keyv.on('error', err => client.logger.error(err.message));
+keyv.on('error', (err) => client.logger.error(err.message));
