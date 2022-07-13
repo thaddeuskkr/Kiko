@@ -53,43 +53,45 @@ module.exports = async (client, message) => {
         }
     }
 
-    if (message.channel.id === client.config.evalChannel && !message.content.startsWith('#')) {
+    if (client.config.evalChannel && client.config.evalChannel !== '') {
+        if (message.channel.id === client.config.evalChannel && !message.content.startsWith('#')) {
         /* eslint-disable no-unused-vars */
         // Add some helpers
-        const lava = client.shoukaku.getNode();
-        const dispatcher = client.queue.get(message.guild.id);
-        const lastResult = this.lastResult;
-        const doReply = val => {
-            if(val instanceof Error) {
-                message.reply(`Callback error: \`${val}\``);
-            } else {
-                const result = makeResultMessages(val, process.hrtime(this.hrStart));
-                if(Array.isArray(result)) {
-                    for(const item of result) message.channel.send(item);
+            const lava = client.shoukaku.getNode();
+            const dispatcher = client.queue.get(message.guild.id);
+            const lastResult = this.lastResult;
+            const doReply = val => {
+                if(val instanceof Error) {
+                    message.reply(`Callback error: \`${val}\``);
                 } else {
-                    message.reply(result);
+                    const result = makeResultMessages(val, process.hrtime(this.hrStart));
+                    if(Array.isArray(result)) {
+                        for(const item of result) message.channel.send(item);
+                    } else {
+                        message.reply(result);
+                    }
                 }
+            };
+            /* eslint-enable no-unused-vars */
+            let code = message.content;
+            if (code.startsWith('```') && code.endsWith('```')) {
+                code = code.replace(/(^.*?\s)|(\n.*$)/g, '');
             }
-        };
-        /* eslint-enable no-unused-vars */
-        let code = message.content;
-        if (code.startsWith('```') && code.endsWith('```')) {
-            code = code.replace(/(^.*?\s)|(\n.*$)/g, '');
-        }
-        let hrDiff;
-        try {
-            const hrStart = process.hrtime();
-            this.lastResult = eval(code);
-            hrDiff = process.hrtime(hrStart);
-        } catch(err) {
-            return message.reply({ content: `Error while evaluating: \`${err}\`` });
-        }
-        this.hrStart = process.hrtime();
-        const result = makeResultMessages(this.lastResult, hrDiff, code);
-        if(Array.isArray(result)) {
-            return result.map(item => message.channel.send(item));
-        } else {
-            return message.reply(result);
+            let hrDiff;
+            try {
+                const hrStart = process.hrtime();
+                this.lastResult = eval(code);
+                hrDiff = process.hrtime(hrStart);
+            } catch(err) {
+                return message.reply({ content: `Error while evaluating: \`${err}\`` });
+            }
+            this.hrStart = process.hrtime();
+            const result = makeResultMessages(this.lastResult, hrDiff, code);
+            if(Array.isArray(result)) {
+                return result.map(item => message.channel.send(item));
+            } else {
+                return message.reply(result);
+            }
         }
     }
     function makeResultMessages(result, hrDiff, input = null) {
