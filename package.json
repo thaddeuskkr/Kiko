@@ -1,7 +1,7 @@
 {
-  "name": "Kiko",
+  "name": "kiko",
   "version": "2.2.0",
-  "description": "Kiko Discord Bot - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.",
+  "description": "Kiko - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
