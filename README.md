@@ -1,8 +1,10 @@
-# Kiko
+<p align="center">
+  <img src=https://user-images.githubusercontent.com/49682825/178940761-c274ea89-06e0-41a8-b79b-67f5b73622ab.png" />
+</p>
 
 Kiko (previously Ethereal) - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.
 
-### Features
+### Features!
 
 - Reliable music system
 - Integration with the [osu! server that I set up](https://beatmap.tk) - various commands
