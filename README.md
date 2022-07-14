@@ -1,8 +1,9 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/49682825/178940761-c274ea89-06e0-41a8-b79b-67f5b73622ab.png">
-</p>
+  <img src="https://user-images.githubusercontent.com/49682825/178942328-620ee3c9-47ec-429c-9ffe-ecce017b2d45.png">
 
 Kiko (previously Ethereal) - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.
+
+</p>
 
 ### Features!
 
