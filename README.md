@@ -1,3 +1,6 @@
+## MOVED
+- This project has been rewritten and moved, as a sole music bot.
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/49682825/178942328-620ee3c9-47ec-429c-9ffe-ecce017b2d45.png">
 
