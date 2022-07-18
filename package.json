@@ -1,6 +1,6 @@
 {
   "name": "kiko",
-  "version": "2.2.0",
+  "version": "2.5.0",
   "description": "Kiko - A reliable, user-friendly, free to use bot. Modern, has many features, and regularly maintained.",
   "main": "index.js",
   "scripts": {
