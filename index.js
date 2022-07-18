@@ -94,4 +94,4 @@ process.on('unhandledRejection', async (reason, promise) => {
 });
 
 // Keyv handling
-keyv.on('error', (err) => client.logger.error(err.message));
+keyv.on('error', (err) => client.logger.error(err.message)); 
